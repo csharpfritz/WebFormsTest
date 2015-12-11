@@ -390,9 +390,9 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WebFormsTest.Core\WebFormsTest.Core.csproj">
+    <ProjectReference Include="..\WebFormsTest\WebFormsTest.csproj">
       <Project>{2125e4f0-6cea-4001-80db-bf450f70fc33}</Project>
-      <Name>WebFormsTest.Core</Name>
+      <Name>WebFormsTest</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

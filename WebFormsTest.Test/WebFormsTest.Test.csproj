@@ -72,13 +72,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WebFormsTest.Core\WebFormsTest.Core.csproj">
-      <Project>{2125e4f0-6cea-4001-80db-bf450f70fc33}</Project>
-      <Name>WebFormsTest.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\WebFormsTest.Web\WebFormsTest.Web.csproj">
       <Project>{76e9b3c7-b8d3-4996-8166-fc3fa47ef353}</Project>
       <Name>WebFormsTest.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebFormsTest\WebFormsTest.csproj">
+      <Project>{2125e4f0-6cea-4001-80db-bf450f70fc33}</Project>
+      <Name>WebFormsTest</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

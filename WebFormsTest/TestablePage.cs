@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI;
 
-namespace WebFormsTest.Core
+namespace WebFormsTest
 {
   public class TestablePage : Page
   {

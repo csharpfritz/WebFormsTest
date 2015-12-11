@@ -7,8 +7,8 @@
     <ProjectGuid>{2125E4F0-6CEA-4001-80DB-BF450F70FC33}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WebFormsTest.Core</RootNamespace>
-    <AssemblyName>WebFormsTest.Core</AssemblyName>
+    <RootNamespace>WebFormsTest</RootNamespace>
+    <AssemblyName>WebFormsTest</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

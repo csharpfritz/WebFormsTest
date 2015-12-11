@@ -10,7 +10,7 @@ using Microsoft.Owin.Security;
 using Owin;
 using WebFormsTest.Models;
 using System.Web.UI;
-using WebFormsTest.Core;
+using WebFormsTest;
 
 namespace WebFormsTest.Account
 {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using WebFormsTest.Core;
+using WebFormsTest;
 using Xunit;
 
 namespace WebFormsTest.Test
@@ -43,7 +43,7 @@ namespace WebFormsTest.Test
       {
         Context = context.Object
       };
-      sut.FireEvent(Core.TestablePage.WebFormEvent.PreRender, new EventArgs());
+      sut.FireEvent(TestablePage.WebFormEvent.PreRender, new EventArgs());
       var results = sut.RenderHtml();
 
       // Assert
@@ -62,7 +62,7 @@ namespace WebFormsTest.Test
       {
         Context = context.Object
       };
-      sut.FireEvent(Core.TestablePage.WebFormEvent.Load, new EventArgs());
+      sut.FireEvent(TestablePage.WebFormEvent.Load, new EventArgs());
 
       // Assert
       response.Verify(r => r.Write(_Default.LOAD_INDICATOR));

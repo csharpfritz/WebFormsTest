@@ -4,10 +4,11 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using WebFormsInspect.Core;
 
 namespace WebFormsInspect
 {
-  public partial class _Default : Base.BaseWebForm
+  public partial class _Default : TestablePage
   {
 
     public const string LOAD_INDICATOR = "<!-- LOAD WAS CALLED -->";

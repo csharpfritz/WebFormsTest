@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using WebFormsInspect.Core;
 using Xunit;
 
 namespace WebFormsInspect.Test
@@ -37,10 +38,11 @@ namespace WebFormsInspect.Test
       {
         Context = ctx.Object
       };
-      sut.FireEvent(Base.BaseWebForm.WebFormEvent.PreRender, new EventArgs());
+      sut.FireEvent(Core.TestablePage.WebFormEvent.PreRender, new EventArgs());
+      var results = sut.RenderHtml();
 
       // Assert
-      response.Verify(r => r.Write("<!-- FROM THE BASE PAGE -->"), "Did not mark as a base page");
+      Assert.Contains(TestablePage.COMMENT_MARKER, results);
 
     }
 
@@ -58,7 +60,7 @@ namespace WebFormsInspect.Test
       {
         Context = ctx.Object
       };
-      sut.FireEvent(Base.BaseWebForm.WebFormEvent.Load, new EventArgs());
+      sut.FireEvent(Core.TestablePage.WebFormEvent.Load, new EventArgs());
 
       // Assert
       response.Verify(r => r.Write(_Default.LOAD_INDICATOR));

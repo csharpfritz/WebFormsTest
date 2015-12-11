@@ -71,6 +71,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WebFormsInspect.Core\WebFormsInspect.Core.csproj">
+      <Project>{2125e4f0-6cea-4001-80db-bf450f70fc33}</Project>
+      <Name>WebFormsInspect.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WebFormsInspect\WebFormsInspect.csproj">
       <Project>{76e9b3c7-b8d3-4996-8166-fc3fa47ef353}</Project>
       <Name>WebFormsInspect</Name>

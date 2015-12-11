@@ -10,10 +10,11 @@ using Microsoft.Owin.Security;
 using Owin;
 using WebFormsInspect.Models;
 using System.Web.UI;
+using WebFormsInspect.Core;
 
 namespace WebFormsInspect.Account
 {
-    public partial class Manage : Base.BaseWebForm
+    public partial class Manage : TestablePage
     {
         protected string SuccessMessage
         {

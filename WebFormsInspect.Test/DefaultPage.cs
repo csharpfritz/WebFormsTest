@@ -15,11 +15,19 @@ namespace WebFormsInspect.Test
   {
 
     private readonly MockRepository _Mockery;
+    private readonly Mock<HttpContextBase> context;
+    private readonly Mock<HttpResponseBase> response;
 
     public DefaultPage()
     {
 
       _Mockery = new MockRepository(MockBehavior.Loose);
+
+      context = _Mockery.Create<HttpContextBase>();
+      response = _Mockery.Create<HttpResponseBase>();
+      context.SetupGet(c => c.Response).Returns(response.Object);
+      context.SetupGet(c => c.IsDebuggingEnabled).Returns(true);
+
 
     }
 
@@ -28,15 +36,12 @@ namespace WebFormsInspect.Test
     {
 
       // Arrange
-      var ctx = _Mockery.Create<HttpContextBase>();
-      var response = _Mockery.Create<HttpResponseBase>();
-      ctx.SetupGet(c => c.Response).Returns(response.Object);
 
 
       // Act
       var sut = new WebFormsInspect._Default()
       {
-        Context = ctx.Object
+        Context = context.Object
       };
       sut.FireEvent(Core.TestablePage.WebFormEvent.PreRender, new EventArgs());
       var results = sut.RenderHtml();
@@ -51,14 +56,11 @@ namespace WebFormsInspect.Test
     {
 
       // Arrange
-      var ctx = _Mockery.Create<HttpContextBase>();
-      var response = _Mockery.Create<HttpResponseBase>();
-      ctx.SetupGet(c => c.Response).Returns(response.Object);
 
       // Act
       var sut = new WebFormsInspect._Default
       {
-        Context = ctx.Object
+        Context = context.Object
       };
       sut.FireEvent(Core.TestablePage.WebFormEvent.Load, new EventArgs());
 

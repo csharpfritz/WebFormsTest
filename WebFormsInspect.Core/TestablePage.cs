@@ -11,10 +11,10 @@ namespace WebFormsInspect.Core
 {
   public class TestablePage : Page
   {
+
     public const string COMMENT_MARKER = "<!-- From a testable web page -->";
     private HttpContextBase _Context;
 
-    //public BaseWebForm() : this(new HttpContextWrapper(HttpContext.Current)) { }
     public enum WebFormEvent
     {
       Init,
@@ -37,6 +37,8 @@ namespace WebFormsInspect.Core
       }
     }
 
+    #region Methods / Properties to help test
+
     public void FireEvent(WebFormEvent e, EventArgs args)
     {
 
@@ -58,6 +60,28 @@ namespace WebFormsInspect.Core
           break;
       }
     }
+
+    /// <summary>
+    /// Helper property for inherited pages to indicate that we are in 'unit test mode'
+    /// </summary>
+    public bool IsTestingEnabled
+    {
+      get { return HttpContext.Current == null; }
+    }
+
+    /// <summary>
+    /// Render the HTML for this page using the Render method and return the rendered string
+    /// </summary>
+    /// <returns></returns>
+    public string RenderHtml()
+    {
+      var sb = new StringBuilder();
+      var txt = new HtmlTextWriter(new StringWriter(sb));
+      base.Render(txt);
+      return sb.ToString();
+    }
+
+    #endregion
 
     #region Replaced Properties that allow mocking Web Interactions
 
@@ -83,16 +107,11 @@ namespace WebFormsInspect.Core
 
       base.OnPreRender(e);
 
-      this.Controls.Add(new LiteralControl(COMMENT_MARKER));
+      if (Context.IsDebuggingEnabled)
+      {
+        this.Controls.Add(new LiteralControl(COMMENT_MARKER));
+      }
 
-    }
-
-    public string RenderHtml()
-    {
-      var sb = new StringBuilder();
-      var txt = new HtmlTextWriter(new StringWriter(sb));
-      base.Render(txt);
-      return sb.ToString();
     }
 
   }

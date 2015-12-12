@@ -12,7 +12,7 @@ md dist
 copy .\WebFormsTest\bin\%1\WebFormsTest.dll .\.nuget\lib\net40
 
 :: Pack the nupkg
-nuget pack WebFormsTest.nuspec -BasePath .nuget -OutputDirectory dist
+.\packages\NuGet.CommandLine.3.3.0\tools\nuget pack WebFormsTest.nuspec -BasePath .nuget -OutputDirectory dist
 
 goto :end
 

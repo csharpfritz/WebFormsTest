@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>WebFormsTest</id>
+    <version>0.2.0</version>
+    <title>WebFormsTest</title>
+    <authors>Jeffrey T. Fritz</authors>
+    <owners>csharpfritz</owners>
+    <licenseUrl>https://raw.githubusercontent.com/csharpfritz/WebFormsTest/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/csharpfritz/WebFormsTest</projectUrl>
+<!--    
+	TODO: Get cool icon
+	<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
+-->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Unit Test Harness for ASP.NET Web Forms objects</description>
+    <releaseNotes>Initial Publication</releaseNotes>
+    <copyright>Copyright Jeffrey T. Fritz 2015</copyright>
+    <tags>asp.net test unittest</tags>
+  </metadata>
+</package>

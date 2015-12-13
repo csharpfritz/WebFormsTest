@@ -9,6 +9,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebFormsTest.Test", "WebFor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebFormsTest", "WebFormsTest\WebFormsTest.csproj", "{2125E4F0-6CEA-4001-80DB-BF450F70FC33}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Management", ".Management", "{9FBE1CF9-8037-4517-8F0C-C919F0B49076}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.txt = LICENSE.txt
+		pack.cmd = pack.cmd
+		README.md = README.md
+		WebFormsTest.nuspec = WebFormsTest.nuspec
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

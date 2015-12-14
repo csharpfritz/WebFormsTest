@@ -15,7 +15,6 @@ namespace WebFormsTest
 
     public _Default()
     {
-      this.Load += Page_Load;
     }
 
     protected void Page_Load(object sender, EventArgs e)

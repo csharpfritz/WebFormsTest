@@ -47,6 +47,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoEventHandler.cs" />
     <Compile Include="TestablePage.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

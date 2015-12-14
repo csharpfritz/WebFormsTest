@@ -69,6 +69,20 @@ namespace WebFormsTest.Test
 
     }
 
+    [Fact]
+    public void TestPostback()
+    {
+
+      // Arrange
+
+      // Act
+      var sut = new _Default();
+      sut.MockPostData(null);
+
+      // Assert
+
+    }
+
   }
 
 }

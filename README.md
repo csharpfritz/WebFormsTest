@@ -1,6 +1,8 @@
 # WebFormsTest
 A unit testing harness and sample project that assist in unit-testing ASP.NET web forms.
 
+[![Build status](https://ci.appveyor.com/api/projects/status/snidwpdkgswcib21?svg=true)](https://ci.appveyor.com/project/csharpfritz/webformstest)
+
 ## How to get it
 
 Well, you are here looking at the source.  You COULD download the source code and compile the WebFormsTest project and start using the DLL that it outputs.

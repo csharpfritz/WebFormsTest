@@ -14,8 +14,9 @@
 -->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Unit Test Harness for ASP.NET Web Forms objects</description>
+    <summary>Unit test harness to assist in testing code-behind files in ASP.NET Web Forms projects</summary>
     <releaseNotes>Initial Publication</releaseNotes>
-    <copyright>Copyright Jeffrey T. Fritz 2015</copyright>
+    <copyright>Copyright 2015 Jeffrey T. Fritz</copyright>
     <tags>asp.net test unittest</tags>
   </metadata>
 </package>

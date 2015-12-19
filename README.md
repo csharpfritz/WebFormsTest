@@ -3,6 +3,7 @@ A unit testing harness and sample project that assist in unit-testing ASP.NET we
 
 [![Build status](https://ci.appveyor.com/api/projects/status/snidwpdkgswcib21?svg=true)](https://ci.appveyor.com/project/csharpfritz/webformstest)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/WebFormsTest.svg)](https://www.nuget.org/packages/WebFormsTest)
+![NuGet Version](https://img.shields.io/nuget/v/WebFormsTest.svg)
 
 ## How to get it
 

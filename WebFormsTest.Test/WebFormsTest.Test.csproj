@@ -68,6 +68,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoEventFixture.cs" />
     <Compile Include="DefaultPage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

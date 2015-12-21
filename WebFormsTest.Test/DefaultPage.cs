@@ -1,6 +1,7 @@
 ﻿using Moq;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace WebFormsTest.Test
     private readonly MockRepository _Mockery;
     private readonly Mock<HttpContextBase> context;
     private readonly Mock<HttpResponseBase> response;
+    private readonly Mock<HttpRequestBase> request;
 
     public DefaultPage()
     {
@@ -24,9 +26,34 @@ namespace WebFormsTest.Test
       _Mockery = new MockRepository(MockBehavior.Loose);
 
       context = _Mockery.Create<HttpContextBase>();
+      
       response = _Mockery.Create<HttpResponseBase>();
       context.SetupGet(c => c.Response).Returns(response.Object);
       context.SetupGet(c => c.IsDebuggingEnabled).Returns(true);
+
+      request = _Mockery.Create<HttpRequestBase>();
+      context.SetupGet(c => c.Request).Returns(request.Object);
+
+    }
+
+    [Fact]
+    public void BasePageFormHandled()
+    {
+
+      // Arrange
+      var fakeForm = new NameValueCollection();
+      fakeForm.Add("test", "item");
+      request.SetupGet(r => r.Form).Returns(fakeForm);
+
+      // Act
+      var sut = new WebFormsTest._Default()
+      {
+        Context = context.Object
+      };
+      sut.FireEvent(TestablePage.WebFormEvent.Load, new EventArgs());
+
+      // Assert
+      response.Verify(r => r.Write("item"), "Did not write the content of the Form");
 
 
     }
@@ -36,7 +63,6 @@ namespace WebFormsTest.Test
     {
 
       // Arrange
-
 
       // Act
       var sut = new WebFormsTest._Default()
@@ -70,16 +96,45 @@ namespace WebFormsTest.Test
     }
 
     [Fact]
-    public void TestPostback()
+    public void ShouldBuildControlsCollection()
     {
 
       // Arrange
 
       // Act
-      var sut = new _Default();
-      sut.MockPostData(null);
+      var sut = new _Default
+      {
+        Context = context.Object
+      };
+      var handler = (IHttpHandler)sut;
+
+      //sut.FireEvent(TestablePage.WebFormEvent.Init, EventArgs.Empty);
+
+      //// Assert
+      //Assert.NotNull(sut.Master);
+      //Assert.NotEmpty(sut.Controls);
+
+    }
+
+
+    [Fact]
+    public void TestPostback()
+    {
+
+      // Arrange
+      var formData = new NameValueCollection();
+      formData.Add("test", "item");
+
+      // Act
+      var sut = new _Default()
+      {
+        Context = context.Object
+      };
+      sut.MockPostData(formData);
+      sut.FireEvent(TestablePage.WebFormEvent.Load, null);
 
       // Assert
+      response.Verify(r => r.Write("item"), "Did not write the Form contents");
 
     }
 

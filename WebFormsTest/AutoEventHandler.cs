@@ -157,11 +157,11 @@ namespace WebFormsTest
       {
 
         var ctor = typeof(ParameterfulDelegate).GetConstructor(new Type[] { typeof(object), typeof(IntPtr) });
-        var method = new DynamicMethod(
-            name: "TestDelegate_" + 
-        );
+        //var method = new DynamicMethod(
+        //    name: "TestDelegate_" + 
+        //);
 
-
+        return null;
 
       }
 

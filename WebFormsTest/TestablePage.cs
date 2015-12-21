@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace WebFormsTest
 {
@@ -44,10 +45,22 @@ namespace WebFormsTest
 
       if (IsTestingEnabled)
       {
-        this.AutoEventWireup();
+        // Redirect to AutoEventHandler to inspect and add event handlers  appropriately
+
+        // NOTE: Need work to do here to ensure that the Control collection is created properly
+        base.FrameworkInitialize();
+        OnPreInit(EventArgs.Empty);
+        
+        var m = Master;             // Master property adds the MasterPage object to the Controls collection
+
       }
 
     }
+
+    /// <summary>
+    /// Folder location where the ASPX / ASCX files are stored so that the unit-test harness can load page and control content
+    /// </summary>
+    public static string WebRootFolder { get; set; }
 
     public new HttpContextBase Context
     {
@@ -118,40 +131,6 @@ namespace WebFormsTest
 
     }
 
-    /// <summary>
-    /// Check if there are event handlers configured in the page for the standard events and connect them
-    /// </summary>
-    private void AutoEventWireup()
-    {
-
-      RegisterEventHandlerIfMissing("Load");
-
-    }
-
-    private void RegisterEventHandlerIfMissing(string name)
-    {
-
-      /// Attempt at doing this with Reflection...  running into a security error
-
-      var methodName = $"Page_{name}";
-      if (!IsMethodPresent(methodName)) return;
-
-      // Walk the internal structure of the Event to get the Event Delegate
-      var thisEvent = GetType().GetEvent(name, AllBindings);
-      Type tEvent = thisEvent.EventHandlerType;
-
-      var eventHandlerList = thisEvent.DeclaringType.GetField("Events", AllBindings);
-
-      MethodInfo mi = GetType().GetMethod(methodName, AllBindings);
-
-      /**
-            Delegate d = Delegate.CreateDelegate(tEvent, mi);
-
-            // Remove it first, then re-add it
-            thisEvent.RemoveEventHandler(this, d);
-            thisEvent.AddEventHandler(this, d);
-        **/
-    }
 
     /// <summary>
     /// Is the submitted method name implemented?
@@ -194,6 +173,27 @@ namespace WebFormsTest
         this.Controls.Add(new LiteralControl(COMMENT_MARKER));
       }
 
+    }
+
+    protected override void CreateChildControls()
+    {
+
+      if (IsTestingEnabled)
+      {
+        Debug.WriteLine("Controls in collection: " + Controls.Count);
+      } else
+      {
+        base.CreateChildControls();
+      }
+
+    }
+
+    public override ControlCollection Controls
+    {
+      get
+      {
+        return base.Controls;
+      }
     }
 
     protected internal new EventHandlerList Events

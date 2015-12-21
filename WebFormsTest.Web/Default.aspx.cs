@@ -15,10 +15,16 @@ namespace WebFormsTest
 
     public _Default()
     {
+      Page.Load += Page_Load;
     }
 
     protected void Page_Load(object sender, EventArgs e)
     {
+
+      if (Request.Form != null && Request.Form.Count > 0)
+      {
+        Response.Write(Request.Form["test"]);
+      }
 
       Response.Write(LOAD_INDICATOR);
 

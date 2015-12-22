@@ -32,6 +32,8 @@ namespace WebFormsTest
     private HttpContextBase _Context;
     private static readonly BindingFlags AllBindings = BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
+    private readonly AutoEventHandler _AutoEventHandler;
+
     public enum WebFormEvent
     {
       Init,
@@ -53,6 +55,7 @@ namespace WebFormsTest
         
         var m = Master;             // Master property adds the MasterPage object to the Controls collection
 
+        _AutoEventHandler = AutoEventHandler.Connect(this);
       }
 
     }
@@ -123,6 +126,7 @@ namespace WebFormsTest
     {
 
       // Ensure that the control structure is available
+      // TODO: This is not actually loading the control hierarchy
       EnsureChildControls();
 
       // Load the data

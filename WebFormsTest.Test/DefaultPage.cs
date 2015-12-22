@@ -95,49 +95,6 @@ namespace WebFormsTest.Test
 
     }
 
-    [Fact]
-    public void ShouldBuildControlsCollection()
-    {
-
-      // Arrange
-
-      // Act
-      var sut = new _Default
-      {
-        Context = context.Object
-      };
-      var handler = (IHttpHandler)sut;
-
-      //sut.FireEvent(TestablePage.WebFormEvent.Init, EventArgs.Empty);
-
-      //// Assert
-      //Assert.NotNull(sut.Master);
-      //Assert.NotEmpty(sut.Controls);
-
-    }
-
-
-    [Fact]
-    public void TestPostback()
-    {
-
-      // Arrange
-      var formData = new NameValueCollection();
-      formData.Add("test", "item");
-
-      // Act
-      var sut = new _Default()
-      {
-        Context = context.Object
-      };
-      sut.MockPostData(formData);
-      sut.FireEvent(TestablePage.WebFormEvent.Load, null);
-
-      // Assert
-      response.Verify(r => r.Write("item"), "Did not write the Form contents");
-
-    }
-
   }
 
 }

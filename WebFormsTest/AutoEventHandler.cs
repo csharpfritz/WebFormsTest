@@ -27,12 +27,14 @@ namespace WebFormsTest
     /// <summary>
     /// Entrance point to connect events to methods
     /// </summary>
-    public void Connect(TestablePage sut)
+    public static AutoEventHandler Connect(TestablePage sut)
     {
 
       var handler = new AutoEventHandler(sut);
 
       handler.GetDelegateInformation();
+
+      return handler;
 
     }
 
@@ -71,6 +73,7 @@ namespace WebFormsTest
         Delegate eventDelegates = UnderTest.Events[eventHandler.Key];
         if (eventDelegates != null)
         {
+          // Determine if the event is already connected to this handler delegate
           foreach (var eventDelegate in eventDelegates.GetInvocationList())
           {
             if (eventDelegate.Method.Equals(eventHandler.Value))
@@ -81,8 +84,8 @@ namespace WebFormsTest
           }
         }
 
-        // If the event exists, generate the event addHandler code
-        if (eventExists)
+        // If the eventhandler is not connected, generate the event addHandler code
+        if (!eventExists)
         {
           // Createa a new delegate proxy
           var functionPtr = eventHandler.Value.MethodHandle.GetFunctionPointer();

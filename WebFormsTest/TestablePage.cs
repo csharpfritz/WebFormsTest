@@ -105,7 +105,7 @@ namespace WebFormsTest
     /// <summary>
     /// Helper property for inherited pages to indicate that we are in 'unit test mode'
     /// </summary>
-    public bool IsTestingEnabled
+    public static bool IsInTestMode
     {
       get { return HttpContext.Current == null; }
     }

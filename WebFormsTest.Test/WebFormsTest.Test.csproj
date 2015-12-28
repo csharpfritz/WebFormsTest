@@ -70,8 +70,8 @@
   <ItemGroup>
     <Compile Include="AutoEventFixture.cs" />
     <Compile Include="BaseFixture.cs" />
-    <Compile Include="DefaultPage.cs" />
     <Compile Include="Postback.Simple.Fixture.cs" />
+    <Compile Include="DefaultPageFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

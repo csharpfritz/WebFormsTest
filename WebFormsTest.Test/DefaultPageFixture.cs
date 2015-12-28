@@ -12,7 +12,7 @@ using Xunit;
 namespace WebFormsTest.Test
 {
 
-  public class DefaultPage
+  public class DefaultPageFixture
   {
 
     private readonly MockRepository _Mockery;
@@ -20,7 +20,7 @@ namespace WebFormsTest.Test
     private readonly Mock<HttpResponseBase> response;
     private readonly Mock<HttpRequestBase> request;
 
-    public DefaultPage()
+    public DefaultPageFixture()
     {
 
       _Mockery = new MockRepository(MockBehavior.Loose);

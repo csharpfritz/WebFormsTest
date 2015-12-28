@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI;
-using System.Reflection;
 using System.Diagnostics;
 
 namespace WebFormsTest
@@ -45,7 +41,7 @@ namespace WebFormsTest
     public TestablePage()
     {
 
-      if (IsTestingEnabled)
+      if (IsInTestMode)
       {
         // Redirect to AutoEventHandler to inspect and add event handlers  appropriately
 
@@ -182,7 +178,7 @@ namespace WebFormsTest
     protected override void CreateChildControls()
     {
 
-      if (IsTestingEnabled)
+      if (IsInTestMode)
       {
         Debug.WriteLine("Controls in collection: " + Controls.Count);
       } else

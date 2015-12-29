@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace WebFormsInspect.Test
+namespace Fritz.WebFormsTest.Test
 {
 
   /// <summary>
@@ -30,11 +30,11 @@ namespace WebFormsInspect.Test
       // Arrange
 
       // Act
-      var sut = new Scenarios.Postback.Textbox_StaticId
+      var sut = new Web.Scenarios.Postback.Textbox_StaticId
       {
         Context = context.Object
       };
-      sut.FireEvent(WebFormsTest.TestablePage.WebFormEvent.Init, EventArgs.Empty);
+      sut.FireEvent(TestablePage.WebFormEvent.Init, EventArgs.Empty);
 
       // Assert
       Assert.NotEqual(0, sut.Controls.Count);

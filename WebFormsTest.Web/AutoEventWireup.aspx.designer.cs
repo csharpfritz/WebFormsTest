@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebFormsInspect
+namespace Fritz.WebFormsTest.Web
 {
 
 

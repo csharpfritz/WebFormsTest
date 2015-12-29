@@ -7,7 +7,7 @@ using System.Web.Routing;
 using System.Web.Security;
 using System.Web.SessionState;
 
-namespace WebFormsTest
+namespace Fritz.WebFormsTest.Web
 {
     public class Global : HttpApplication
     {

@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AutoEventWireup.aspx.cs" Inherits="WebFormsInspect.AutoEventWireup" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AutoEventWireup.aspx.cs" Inherits="Fritz.WebFormsTest.Web.AutoEventWireup" %>
 
 <!DOCTYPE html>
 

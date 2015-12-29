@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Fritz.WebFormsTest.Web;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Xunit;
 
-namespace WebFormsInspect.Test
+namespace Fritz.WebFormsTest.Test
 {
 
   public class AutoEventFixture

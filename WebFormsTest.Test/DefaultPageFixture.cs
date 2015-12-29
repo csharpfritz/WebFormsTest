@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Fritz.WebFormsTest.Web;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -6,10 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using WebFormsTest;
 using Xunit;
 
-namespace WebFormsTest.Test
+namespace Fritz.WebFormsTest.Test
 {
 
   public class DefaultPageFixture
@@ -46,7 +46,7 @@ namespace WebFormsTest.Test
       request.SetupGet(r => r.Form).Returns(fakeForm);
 
       // Act
-      var sut = new WebFormsTest._Default()
+      var sut = new _Default()
       {
         Context = context.Object
       };
@@ -65,7 +65,7 @@ namespace WebFormsTest.Test
       // Arrange
 
       // Act
-      var sut = new WebFormsTest._Default()
+      var sut = new _Default()
       {
         Context = context.Object
       };
@@ -84,7 +84,7 @@ namespace WebFormsTest.Test
       // Arrange 
 
       // Act
-      var sut = new WebFormsTest._Default
+      var sut = new _Default
       {
         Context = context.Object
       };

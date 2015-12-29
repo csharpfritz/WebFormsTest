@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebFormsInspect.Scenarios {
+namespace Fritz.WebFormsTest.Web.Scenarios {
     
     
     public partial class Default {

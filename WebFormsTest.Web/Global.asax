@@ -1,1 +1,1 @@
-﻿<%@ Application Codebehind="Global.asax.cs" Inherits="WebFormsTest.Global" Language="C#" %>
+﻿<%@ Application Codebehind="Global.asax.cs" Inherits="Fritz.WebFormsTest.Web.Global" Language="C#" %>

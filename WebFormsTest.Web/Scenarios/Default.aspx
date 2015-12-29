@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/Site.Master" CodeBehind="Default.aspx.cs" Inherits="WebFormsInspect.Scenarios.Default" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/Site.Master" CodeBehind="Default.aspx.cs" Inherits="Fritz.WebFormsTest.Web.Scenarios.Default" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="MainContent">
 

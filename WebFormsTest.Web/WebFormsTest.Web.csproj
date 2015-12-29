@@ -13,8 +13,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WebFormsInspect</RootNamespace>
-    <AssemblyName>WebFormsInspect</AssemblyName>
+    <RootNamespace>Fritz.WebFormsTest.Web</RootNamespace>
+    <AssemblyName>Fritz.WebFormsTest.Web</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -274,9 +274,9 @@
     <Folder Include="UserControls\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WebFormsTest\WebFormsTest.csproj">
+    <ProjectReference Include="..\WebFormsTest\Fritz.WebFormsTest.csproj">
       <Project>{2125e4f0-6cea-4001-80db-bf450f70fc33}</Project>
-      <Name>WebFormsTest</Name>
+      <Name>Fritz.WebFormsTest</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

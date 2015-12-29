@@ -6,7 +6,7 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Web.UI;
 
-namespace WebFormsTest
+namespace Fritz.WebFormsTest
 {
 
   /// <summary>

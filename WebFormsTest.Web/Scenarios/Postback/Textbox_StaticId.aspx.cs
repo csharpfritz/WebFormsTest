@@ -4,9 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using WebFormsTest;
 
-namespace WebFormsInspect.Scenarios.Postback
+namespace Fritz.WebFormsTest.Web.Scenarios.Postback
 {
   public partial class Textbox_StaticId : TestablePage
   {

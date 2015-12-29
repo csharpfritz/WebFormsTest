@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Textbox_StaticId.aspx.cs" Inherits="WebFormsInspect.Scenarios.Postback.Textbox_StaticId" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Textbox_StaticId.aspx.cs" Inherits="Fritz.WebFormsTest.Web.Scenarios.Postback.Textbox_StaticId" %>
 
 <!DOCTYPE html>
 

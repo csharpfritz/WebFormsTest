@@ -4,9 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using WebFormsTest;
 
-namespace WebFormsInspect
+namespace Fritz.WebFormsTest.Web
 {
   public partial class AutoEventWireup : TestablePage
   {

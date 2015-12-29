@@ -8,7 +8,7 @@ using System.Web;
 using System.Web.UI;
 using System.Diagnostics;
 
-namespace WebFormsTest
+namespace Fritz.WebFormsTest
 {
   public class TestablePage : Page
   {

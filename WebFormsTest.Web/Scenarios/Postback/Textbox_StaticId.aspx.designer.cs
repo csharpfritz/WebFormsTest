@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebFormsInspect.Scenarios.Postback {
+namespace Fritz.WebFormsTest.Web.Scenarios.Postback {
     
     
     public partial class Textbox_StaticId {

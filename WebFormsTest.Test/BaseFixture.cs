@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace WebFormsInspect.Test
+namespace Fritz.WebFormsTest.Test
 {
 
   public abstract class BaseFixture

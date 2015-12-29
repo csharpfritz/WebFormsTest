@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebFormsInspect {
+namespace WebFormsInspect.Scenarios.Postback {
     
     
-    public partial class Postback_Simple {
+    public partial class Textbox_StaticId {
         
         /// <summary>
         /// form1 control.
@@ -22,12 +22,12 @@ namespace WebFormsInspect {
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
         
         /// <summary>
-        /// textbox control.
+        /// TestTextboxControl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox textbox;
+        protected global::System.Web.UI.WebControls.TextBox TestTextboxControl;
     }
 }

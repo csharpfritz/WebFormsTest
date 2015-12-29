@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace WebFormsInspect.Test
 {
@@ -15,25 +16,29 @@ namespace WebFormsInspect.Test
   public class Postback_Simple_Fixture : BaseFixture
   {
 
+    private readonly ITestOutputHelper output;
+
+    public Postback_Simple_Fixture(ITestOutputHelper output)
+    {
+      this.output = output;
+    }
+
     [Fact]
-    public void TextboxReloaded()
+    public void TextboxAddedToControlSet()
     {
 
       // Arrange
-      var textBoxContent = "This is my test " + new Random().Next(1, 1000);
-      var form = new NameValueCollection();
-      form.Add("textbox", textBoxContent);
 
       // Act
-      var sut = new Postback_Simple
+      var sut = new Scenarios.Postback.Textbox_StaticId
       {
         Context = context.Object
       };
-      sut.MockPostData(form);
+      sut.FireEvent(WebFormsTest.TestablePage.WebFormEvent.Init, EventArgs.Empty);
 
       // Assert
-      //Assert.True(sut.IsPostBack, "Postback was not flagged properly");
-      Assert.Equal(textBoxContent, sut.Textbox.Text);
+      Assert.NotEqual(0, sut.Controls.Count);
+
 
     }
 

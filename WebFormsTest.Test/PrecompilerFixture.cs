@@ -1,6 +1,7 @@
 ﻿using Fritz.WebFormsTest.Web;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -19,7 +20,12 @@ namespace Fritz.WebFormsTest.Test
 
     public PrecompilerFixture()
     {
-      _precompiler = new WebFormsTest.WebFormsPrecompiler("c:\\dev\\WebFormsTest\\WebFormsTest.Web", typeof(_Default).Assembly);
+
+      Uri codeBase = new Uri(GetType().Assembly.CodeBase);
+      var currentFolder = new DirectoryInfo(Path.GetDirectoryName(codeBase.LocalPath));
+      var webFolder = currentFolder.Parent.Parent.Parent.GetDirectories("WebFormsTest.Web")[0];
+
+      _precompiler = new WebFormsTest.WebFormsPrecompiler(webFolder.FullName, typeof(_Default).Assembly);
     }
 
     public void Dispose()
@@ -35,9 +41,10 @@ namespace Fritz.WebFormsTest.Test
     private PrecompilerFixture _Fixture;
     private ITestOutputHelper _testHelper;
 
-    public PrecompilerTests(PrecompilerFixture fixture, ITestOutputHelper helper)
+    public PrecompilerTests(PrecompilerFixture fixture, ITestOutputHelper helper) //       PrecompilerFixture fixture, 
     {
       _Fixture = fixture;
+
       _testHelper = helper;
       _testHelper.WriteLine("Target folder: " + _Fixture._precompiler.TargetFolder);
     }

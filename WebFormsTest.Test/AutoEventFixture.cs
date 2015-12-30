@@ -11,6 +11,7 @@ using Xunit;
 namespace Fritz.WebFormsTest.Test
 {
 
+  [Collection("Precompiler collection")]
   public class AutoEventFixture
   {
 
@@ -19,8 +20,12 @@ namespace Fritz.WebFormsTest.Test
     private readonly Mock<HttpResponseBase> response;
     private readonly Mock<HttpRequestBase> request;
 
-    public AutoEventFixture()
+    public PrecompilerFixture Precompiler { get; private set; }
+
+    public AutoEventFixture(PrecompilerFixture precompiler)
     {
+
+      this.Precompiler = precompiler;
 
       _Mockery = new MockRepository(MockBehavior.Loose);
 
@@ -37,7 +42,7 @@ namespace Fritz.WebFormsTest.Test
 
     //[Fact]
     /// <summary>
-    /// Return to inspecting this test after the Rehydrate capability is built
+    /// Disabled until we fix the AutoEventWireup feature
     /// </summary>
     public void LoadEventWiredUp()
     {
@@ -45,10 +50,9 @@ namespace Fritz.WebFormsTest.Test
       // Arrange
 
       // Act
-      var sut = new AutoEventWireup
-      {
-        Context = context.Object
-      };
+      var sut = WebApplicationProxy.GetPageByLocation<AutoEventWireup>("/AutoEventWireup.aspx");
+      sut.Context = context.Object;
+      sut.PrepareTests();
       sut.FireEvent(WebFormsTest.TestablePage.WebFormEvent.Load, new EventArgs());
 
       // Assert

@@ -44,8 +44,8 @@ namespace Fritz.WebFormsTest
 
       if (IsInTestMode)
       {
-        // Redirect to AutoEventHandler to inspect and add event handlers  appropriately
-
+        // Reference the empty context here in case any nasty framework items are looking for it before a mock is provided
+        Context = new EmptyHttpContext();
       }
 
     }
@@ -184,17 +184,6 @@ namespace Fritz.WebFormsTest
       }
     }
 
-    
-
-    public void Test()
-    {
-
-      var s = new HttpServerUtilityWrapper(base.Server);
-
-
-
-    }
-
     #endregion
 
     protected override void OnPreRender(EventArgs e)
@@ -241,6 +230,9 @@ namespace Fritz.WebFormsTest
       public override int ScriptTimeout { get; set; }
 
     }
+
+    public class EmptyHttpContext : HttpContextBase {  }
+
 
   }
 

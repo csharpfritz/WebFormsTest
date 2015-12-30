@@ -15,14 +15,11 @@ namespace Fritz.WebFormsTest.Test
   public class PrecompilerFixture : IDisposable
   {
 
-    private WebFormsPrecompiler _precompiler;
-    private ITestOutputHelper _testHelper;
+    internal WebFormsPrecompiler _precompiler;
 
-    public PrecompilerFixture(ITestOutputHelper helper)
+    public PrecompilerFixture()
     {
-      _testHelper = helper;
       _precompiler = new WebFormsTest.WebFormsPrecompiler("c:\\dev\\WebFormsTest\\WebFormsTest.Web", typeof(_Default).Assembly);
-      _testHelper.WriteLine("Target folder: " + _precompiler.TargetFolder);
     }
 
     public void Dispose()
@@ -30,12 +27,27 @@ namespace Fritz.WebFormsTest.Test
       _precompiler.Dispose();
     }
 
+  }
+
+  public class PrecompilerTests : IClassFixture<PrecompilerFixture>
+  {
+
+    private PrecompilerFixture _Fixture;
+    private ITestOutputHelper _testHelper;
+
+    public PrecompilerTests(PrecompilerFixture fixture, ITestOutputHelper helper)
+    {
+      _Fixture = fixture;
+      _testHelper = helper;
+      _testHelper.WriteLine("Target folder: " + _Fixture._precompiler.TargetFolder);
+    }
+
     [Fact]
     public void GetPageByType()
     {
 
       // Get the default page
-      var t = _precompiler.CompilePage("/Scenarios/Postback/Textbox_StaticId.aspx");
+      var t = _Fixture._precompiler.CompilePage("/Scenarios/Postback/Textbox_StaticId.aspx");
 
       _testHelper.WriteLine("Type returned: " + t.FullName);
 
@@ -45,7 +57,7 @@ namespace Fritz.WebFormsTest.Test
       var sut = Activator.CreateInstance(t);
       _testHelper.WriteLine("New page: " + sut.GetType());
 
-      t = _precompiler.CompilePage("/Default.aspx");
+      t = _Fixture._precompiler.CompilePage("/Default.aspx");
 
       _testHelper.WriteLine("Type returned: " + t.FullName);
 
@@ -61,7 +73,7 @@ namespace Fritz.WebFormsTest.Test
     public void BeginProcessing()
     {
 
-      var t = _precompiler.CompilePage("/Default.aspx");
+      var t = _Fixture._precompiler.CompilePage("/Default.aspx");
 
       _testHelper.WriteLine("Type returned: " + t.FullName);
 

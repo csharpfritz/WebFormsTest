@@ -15,13 +15,10 @@ namespace Fritz.WebFormsTest
   public class WebFormsPrecompiler : IDisposable
   {
 
-    private Assembly _TargetAssembly;
-
-    public WebFormsPrecompiler(string webApplicationRootFolder, Assembly webFormsApplicationAssembly)
+    public WebFormsPrecompiler(string webApplicationRootFolder)
     {
       this.WebApplicationRootFolder = webApplicationRootFolder;
       this.TargetFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-      this._TargetAssembly = webFormsApplicationAssembly;
 
     }
 
@@ -64,26 +61,6 @@ namespace Fritz.WebFormsTest
       return returnType;
 
     }
-
-    public T GetPage<T>() where T : class
-    {
-
-      var c = new System.Web.Compilation.ClientBuildManager(@"/",
-        WebApplicationRootFolder,
-        TargetFolder,
-        new System.Web.Compilation.ClientBuildManagerParameter()
-        {
-          PrecompilationFlags = PrecompilationFlags.ForceDebug |
-                                PrecompilationFlags.CodeAnalysis |
-                                PrecompilationFlags.Updatable
-        });
-
-      var returnObj = c.CreateObject(typeof(T), false);
-
-      return returnObj as T;
-
-    }
-
 
     public void Dispose()
     {

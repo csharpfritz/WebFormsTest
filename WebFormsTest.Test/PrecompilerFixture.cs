@@ -25,7 +25,9 @@ namespace Fritz.WebFormsTest.Test
       var currentFolder = new DirectoryInfo(Path.GetDirectoryName(codeBase.LocalPath));
       var webFolder = currentFolder.Parent.Parent.Parent.GetDirectories("WebFormsTest.Web")[0];
 
-      _precompiler = new WebFormsTest.WebFormsPrecompiler(webFolder.FullName, typeof(_Default).Assembly);
+      _precompiler = new WebFormsTest.WebFormsPrecompiler(webFolder.FullName);
+      _precompiler.Execute();
+
     }
 
     public void Dispose()
@@ -96,6 +98,7 @@ namespace Fritz.WebFormsTest.Test
       _testHelper.WriteLine("WE GOT THE CONTROL TREE!!");
 
     }
+
 
     public class EmptyHttpContext : HttpContextBase { }
 

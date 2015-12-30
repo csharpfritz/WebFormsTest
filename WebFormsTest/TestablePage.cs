@@ -29,6 +29,7 @@ namespace Fritz.WebFormsTest
     private static readonly BindingFlags AllBindings = BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
     private readonly AutoEventHandler _AutoEventHandler;
+    private EmptyTestServer _TestServer;
 
     public enum WebFormEvent
     {
@@ -43,19 +44,26 @@ namespace Fritz.WebFormsTest
 
       if (IsInTestMode)
       {
-        // Redirect to AutoEventHandler to inspect and add event handlers  appropriately
-
-        // NOTE: Need work to do here to ensure that the Control collection is created properly
-        base.FrameworkInitialize();
-        OnPreInit(EventArgs.Empty);
-        
-        var m = Master;             // Master property adds the MasterPage object to the Controls collection
-
-        _AutoEventHandler = AutoEventHandler.Connect(this);
+        // Reference the empty context here in case any nasty framework items are looking for it before a mock is provided
+        Context = new EmptyHttpContext();
       }
 
     }
 
+    public void PrepareTests()
+    {
+
+      // This is a test-only concern
+      if (!IsInTestMode) return;
+
+      // NOTE: This is a COMPLETE fake out and wrap around the generated code
+      base.FrameworkInitialize();
+      var mi = this.GetType().GetMethod("__BuildControlTree", BindingFlags.NonPublic | BindingFlags.Instance);
+      mi.Invoke(this, new object[] { this });
+
+      OnPreInit(EventArgs.Empty);
+
+    }
     /// <summary>
     /// Folder location where the ASPX / ASCX files are stored so that the unit-test harness can load page and control content
     /// </summary>
@@ -161,6 +169,21 @@ namespace Fritz.WebFormsTest
       get { return Context.Session; }
     }
 
+    public new HttpServerUtilityBase Server
+    {
+      get {
+
+        if (IsInTestMode)
+        {
+          if (_TestServer == null) _TestServer = new EmptyTestServer();
+          return _TestServer;
+        }
+
+        return Context.Server;
+
+      }
+    }
+
     #endregion
 
     protected override void OnPreRender(EventArgs e)
@@ -200,6 +223,16 @@ namespace Fritz.WebFormsTest
     {
       get { return base.Events; }
     }
+
+    public class EmptyTestServer : HttpServerUtilityBase
+    {
+
+      public override int ScriptTimeout { get; set; }
+
+    }
+
+    public class EmptyHttpContext : HttpContextBase {  }
+
 
   }
 

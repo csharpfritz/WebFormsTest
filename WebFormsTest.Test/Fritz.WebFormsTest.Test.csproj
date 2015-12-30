@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Fritz.WebFormsInspect.Test</RootNamespace>
-    <AssemblyName>Fritz.WebFormsInspect.Test</AssemblyName>
+    <AssemblyName>Fritz.WebFormsTest.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -72,6 +72,7 @@
     <Compile Include="BaseFixture.cs" />
     <Compile Include="Postback.Simple.Fixture.cs" />
     <Compile Include="DefaultPageFixture.cs" />
+    <Compile Include="PrecompilerFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

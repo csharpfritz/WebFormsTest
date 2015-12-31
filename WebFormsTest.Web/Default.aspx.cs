@@ -4,9 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using WebFormsTest;
 
-namespace WebFormsTest
+namespace Fritz.WebFormsTest.Web
 {
   public partial class _Default : TestablePage
   {
@@ -15,11 +14,16 @@ namespace WebFormsTest
 
     public _Default()
     {
-      this.Load += Page_Load;
+      Page.Load += Page_Load;
     }
 
     protected void Page_Load(object sender, EventArgs e)
     {
+
+      if (Request.Form != null && Request.Form.Count > 0)
+      {
+        Response.Write(Request.Form["test"]);
+      }
 
       Response.Write(LOAD_INDICATOR);
 

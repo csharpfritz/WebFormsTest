@@ -50,7 +50,7 @@ namespace Fritz.WebFormsTest
 
     }
 
-    public void PrepareToProcess(TestablePage renderedPage)
+    public void PrepareTests()
     {
 
       // This is a test-only concern
@@ -58,7 +58,7 @@ namespace Fritz.WebFormsTest
 
       // NOTE: This is a COMPLETE fake out and wrap around the generated code
       base.FrameworkInitialize();
-      var mi = renderedPage.GetType().GetMethod("__BuildControlTree", BindingFlags.NonPublic | BindingFlags.Instance);
+      var mi = this.GetType().GetMethod("__BuildControlTree", BindingFlags.NonPublic | BindingFlags.Instance);
       mi.Invoke(this, new object[] { this });
 
       OnPreInit(EventArgs.Empty);

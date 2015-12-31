@@ -39,6 +39,11 @@ namespace Fritz.WebFormsTest
     }
 
     /// <summary>
+    /// The folder that the Web Application resides in
+    /// </summary>
+    public string WebApplicationRootFolder {  get { return _TargetFolder; } }
+
+    /// <summary>
     /// Inspect the application and create mappings for all types
     /// </summary>
     public void Initialize()
@@ -109,11 +114,15 @@ namespace Fritz.WebFormsTest
     protected virtual void Dispose(bool isDisposing)
     {
 
-      if (!isDisposing) GC.SuppressFinalize(this);
+      if (isDisposing) GC.SuppressFinalize(this);
 
       // Clean up the target folder
-      Directory.Delete(TargetFolder, true);
-
+      try {
+        Directory.Delete(WebApplicationRootFolder, true);
+      } catch (DirectoryNotFoundException)
+      {
+        // Its ok...  its already gone!
+      }
     }
 
   }

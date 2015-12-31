@@ -10,7 +10,7 @@
     <form id="form1" runat="server">
 
 
-      <asp:TextBox runat="server" ID="TestTextboxControl" ClientIDMode="Static" />
+      <asp:TextBox runat="server" ID="TestTextboxControl" ClientIDMode="Static" Text="Initial Text" />
 
     </form>
 </body>

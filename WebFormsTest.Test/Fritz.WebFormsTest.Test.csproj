@@ -8,8 +8,8 @@
     <ProjectGuid>{E375706C-B975-4A33-AF08-F28519D443CE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WebFormsInspect.Test</RootNamespace>
-    <AssemblyName>WebFormsInspect.Test</AssemblyName>
+    <RootNamespace>Fritz.WebFormsInspect.Test</RootNamespace>
+    <AssemblyName>Fritz.WebFormsTest.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -68,7 +68,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoEventFixture.cs" />
+    <Compile Include="BaseFixture.cs" />
+    <Compile Include="Postback.Simple.Fixture.cs" />
     <Compile Include="DefaultPageFixture.cs" />
+    <Compile Include="PrecompilerFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -80,9 +84,9 @@
       <Project>{76e9b3c7-b8d3-4996-8166-fc3fa47ef353}</Project>
       <Name>WebFormsTest.Web</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WebFormsTest\WebFormsTest.csproj">
+    <ProjectReference Include="..\WebFormsTest\Fritz.WebFormsTest.csproj">
       <Project>{2125e4f0-6cea-4001-80db-bf450f70fc33}</Project>
-      <Name>WebFormsTest</Name>
+      <Name>Fritz.WebFormsTest</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

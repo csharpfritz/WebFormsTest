@@ -16,7 +16,7 @@ namespace Fritz.WebFormsTest.Test
   public class PrecompilerFixture : IDisposable
   {
 
-    internal WebFormsPrecompiler _precompiler;
+    internal WebApplicationProxy _precompiler;
 
     public PrecompilerFixture()
     {
@@ -25,8 +25,8 @@ namespace Fritz.WebFormsTest.Test
       var currentFolder = new DirectoryInfo(Path.GetDirectoryName(codeBase.LocalPath));
       var webFolder = currentFolder.Parent.Parent.Parent.GetDirectories("WebFormsTest.Web")[0];
 
-      _precompiler = new WebFormsTest.WebFormsPrecompiler(webFolder.FullName);
-      _precompiler.Execute();
+      _precompiler = new WebApplicationProxy(webFolder.FullName, true);
+      _precompiler.Initialize();
 
     }
 
@@ -37,18 +37,19 @@ namespace Fritz.WebFormsTest.Test
 
   }
 
-  public class PrecompilerTests : IClassFixture<PrecompilerFixture>
+  [Collection("Precompiler collection")]
+  public class PrecompilerTests 
   {
 
     private PrecompilerFixture _Fixture;
     private ITestOutputHelper _testHelper;
 
-    public PrecompilerTests(PrecompilerFixture fixture, ITestOutputHelper helper) //       PrecompilerFixture fixture, 
+    public PrecompilerTests(PrecompilerFixture fixture, ITestOutputHelper helper)
     {
       _Fixture = fixture;
 
       _testHelper = helper;
-      _testHelper.WriteLine("Target folder: " + _Fixture._precompiler.TargetFolder);
+      _testHelper.WriteLine("Target folder: " + _Fixture._precompiler.WebApplicationRootFolder);
     }
 
     [Fact]
@@ -56,25 +57,14 @@ namespace Fritz.WebFormsTest.Test
     {
 
       // Get the default page
-      var t = _Fixture._precompiler.CompilePage("/Scenarios/Postback/Textbox_StaticId.aspx");
+      var t = _Fixture._precompiler.GetPageByLocation("/Scenarios/Postback/Textbox_StaticId.aspx");
 
-      _testHelper.WriteLine("Type returned: " + t.FullName);
+      _testHelper.WriteLine("Type returned: " + t.GetType().FullName);
 
-      var a = Assembly.GetAssembly(t);
+      var a = t.GetType().Assembly;
       _testHelper.WriteLine("ASPNet assembly at: " + a.Location);
 
-      var sut = Activator.CreateInstance(t);
-      _testHelper.WriteLine("New page: " + sut.GetType());
-
-      t = _Fixture._precompiler.CompilePage("/Default.aspx");
-
-      _testHelper.WriteLine("Type returned: " + t.FullName);
-
-      a = Assembly.GetAssembly(t);
-      _testHelper.WriteLine("ASPNet assembly at: " + a.Location);
-
-      sut = Activator.CreateInstance(t);
-      _testHelper.WriteLine("New page: " + sut.GetType());
+      t = _Fixture._precompiler.GetPageByLocation("/Default.aspx");
 
     }
 
@@ -82,16 +72,11 @@ namespace Fritz.WebFormsTest.Test
     public void BeginProcessing()
     {
 
-      var t = _Fixture._precompiler.CompilePage("/Default.aspx");
-
-      _testHelper.WriteLine("Type returned: " + t.FullName);
-
-      var sut = Activator.CreateInstance(t) as _Default;
-      _testHelper.WriteLine("New page: " + sut.GetType());
+      var sut = _Fixture._precompiler.GetPageByLocation("/Default.aspx") as _Default;
 
       sut.Context = new EmptyHttpContext();
 
-      sut.PrepareToProcess(sut);
+      sut.PrepareTests();
 
       _testHelper.WriteLine("Controls: " + sut.Controls.Count);
       Assert.NotEqual(0, sut.Controls.Count);
@@ -101,6 +86,16 @@ namespace Fritz.WebFormsTest.Test
 
 
     public class EmptyHttpContext : HttpContextBase { }
+
+
+    [CollectionDefinition("Precompiler collection")]
+    public class PrecompiledWebCollection : ICollectionFixture<PrecompilerFixture>
+    {
+      // This class has no code, and is never created. Its purpose is simply
+      // to be the place to apply [CollectionDefinition] and all the
+      // ICollectionFixture<> interfaces.
+    }
+
 
   }
 }

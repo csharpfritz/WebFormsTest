@@ -5,9 +5,9 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebFormsTest.Web", "WebFormsTest.Web\WebFormsTest.Web.csproj", "{76E9B3C7-B8D3-4996-8166-FC3FA47EF353}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebFormsTest.Test", "WebFormsTest.Test\WebFormsTest.Test.csproj", "{E375706C-B975-4A33-AF08-F28519D443CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fritz.WebFormsTest.Test", "WebFormsTest.Test\Fritz.WebFormsTest.Test.csproj", "{E375706C-B975-4A33-AF08-F28519D443CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebFormsTest", "WebFormsTest\WebFormsTest.csproj", "{2125E4F0-6CEA-4001-80DB-BF450F70FC33}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fritz.WebFormsTest", "WebFormsTest\Fritz.WebFormsTest.csproj", "{2125E4F0-6CEA-4001-80DB-BF450F70FC33}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Management", ".Management", "{9FBE1CF9-8037-4517-8F0C-C919F0B49076}"
 	ProjectSection(SolutionItems) = preProject

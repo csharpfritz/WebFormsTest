@@ -7,9 +7,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Fritz.WebFormsTest.Web {
+namespace Fritz.WebFormsTest.Web.Scenarios {
     
     
-    public partial class _Default {
+    public partial class Default {
     }
 }

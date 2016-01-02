@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebFormsTest {
+namespace Fritz.WebFormsTest.Web {
     
     
     public partial class ViewSwitcher {

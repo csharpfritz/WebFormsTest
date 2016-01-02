@@ -54,6 +54,7 @@ namespace Fritz.WebFormsInspect.Test
 
       // Assert
       Assert.NotNull(sut.Master);
+      _helper.WriteLine("Master Page Cheeseburger: " + ((SiteMaster)sut.Master).cheeseburger);
 
     }
 

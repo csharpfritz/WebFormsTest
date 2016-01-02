@@ -67,8 +67,11 @@ namespace Fritz.WebFormsTest
         _WebRootFolder,
         _TargetFolder,
         new ClientBuildManagerParameter() { PrecompilationFlags = PrecompilationFlags.ForceDebug });
+      _compiler.PrecompileApplication();
 
       CrawlWebApplication();
+
+      Initialized = true;
 
     }
 
@@ -107,6 +110,7 @@ namespace Fritz.WebFormsTest
     {
 
       var returnType = _Instance._compiler.GetCompiledType(location);
+      SubstituteDummyHttpContext();
 
       return Activator.CreateInstance(returnType);
 
@@ -116,6 +120,7 @@ namespace Fritz.WebFormsTest
     {
 
       var returnType = _Instance._compiler.GetCompiledType(location);
+      SubstituteDummyHttpContext();
 
       return Activator.CreateInstance(returnType) as T;
     }

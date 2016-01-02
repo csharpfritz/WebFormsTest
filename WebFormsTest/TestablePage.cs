@@ -270,12 +270,17 @@ namespace Fritz.WebFormsTest
       if (MasterPageFile == null) return;
 
       _master = WebApplicationProxy.GetPageByLocation(MasterPageFile) as MasterPage;
+      WebApplicationProxy.SubstituteDummyHttpContext();
 
       if (HasControls()) Controls.Clear();
 
       var contentTemplates = ContentTemplateCollection;
       _master.SetContentTemplates(contentTemplates);
       _master.SetOwnerControl(this);
+
+
+      Debug.Assert(HttpContext.Current != null, "HttpContext.Current is missing!");
+
       _master.InitializeAsUserControl(this.Page);
       this.Controls.Add(_master);
 

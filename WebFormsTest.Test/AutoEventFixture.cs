@@ -40,7 +40,7 @@ namespace Fritz.WebFormsTest.Test
 
     }
 
-    //[Fact]
+    [Fact]
     /// <summary>
     /// Disabled until we fix the AutoEventWireup feature
     /// </summary>

@@ -95,6 +95,19 @@ namespace Fritz.WebFormsTest.Test
 
     }
 
+    [Fact]
+    public void Test()
+    {
+
+      WebApplicationProxy.SubstituteDummyHttpContext();
+      HttpContext testContext = HttpContext.Current;
+
+      Assert.NotNull(testContext);
+      Assert.True(testContext.Items.Contains("IsInTestMode"));
+
+
+    }
+
   }
 
 }

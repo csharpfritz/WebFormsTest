@@ -16,8 +16,6 @@ namespace Fritz.WebFormsTest.Test
   public class PrecompilerFixture : IDisposable
   {
 
-    internal WebApplicationProxy _precompiler;
-
     public PrecompilerFixture()
     {
 
@@ -25,14 +23,14 @@ namespace Fritz.WebFormsTest.Test
       var currentFolder = new DirectoryInfo(Path.GetDirectoryName(codeBase.LocalPath));
       var webFolder = currentFolder.Parent.Parent.Parent.GetDirectories("WebFormsTest.Web")[0];
 
-      _precompiler = new WebApplicationProxy(webFolder.FullName, true);
-      _precompiler.Initialize();
+      WebApplicationProxy.Create(webFolder.FullName, true);
+      WebApplicationProxy.Initialize();
 
     }
 
     public void Dispose()
     {
-      _precompiler.Dispose();
+      WebApplicationProxy.DisposeIt();
     }
 
   }
@@ -49,7 +47,7 @@ namespace Fritz.WebFormsTest.Test
       _Fixture = fixture;
 
       _testHelper = helper;
-      _testHelper.WriteLine("Target folder: " + _Fixture._precompiler.WebApplicationRootFolder);
+      _testHelper.WriteLine("Target folder: " + WebApplicationProxy.WebApplicationRootFolder);
     }
 
     [Fact]
@@ -57,14 +55,14 @@ namespace Fritz.WebFormsTest.Test
     {
 
       // Get the default page
-      var t = _Fixture._precompiler.GetPageByLocation("/Scenarios/Postback/Textbox_StaticId.aspx");
+      var t = WebApplicationProxy.GetPageByLocation("/Scenarios/Postback/Textbox_StaticId.aspx");
 
       _testHelper.WriteLine("Type returned: " + t.GetType().FullName);
 
       var a = t.GetType().Assembly;
       _testHelper.WriteLine("ASPNet assembly at: " + a.Location);
 
-      t = _Fixture._precompiler.GetPageByLocation("/Default.aspx");
+      t = WebApplicationProxy.GetPageByLocation("/Default.aspx");
 
     }
 
@@ -72,9 +70,9 @@ namespace Fritz.WebFormsTest.Test
     public void BeginProcessing()
     {
 
-      var sut = _Fixture._precompiler.GetPageByLocation("/Default.aspx") as _Default;
+      var sut = WebApplicationProxy.GetPageByLocation("/Default.aspx") as _Default;
 
-      sut.Context = new EmptyHttpContext();
+      sut.Context = new TestablePage.EmptyHttpContext();
 
       sut.PrepareTests();
 
@@ -83,10 +81,6 @@ namespace Fritz.WebFormsTest.Test
       _testHelper.WriteLine("WE GOT THE CONTROL TREE!!");
 
     }
-
-
-    public class EmptyHttpContext : HttpContextBase { }
-
 
     [CollectionDefinition("Precompiler collection")]
     public class PrecompiledWebCollection : ICollectionFixture<PrecompilerFixture>

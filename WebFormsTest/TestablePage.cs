@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Diagnostics;
+using System.Collections;
 
 namespace Fritz.WebFormsTest
 {
@@ -64,6 +65,7 @@ namespace Fritz.WebFormsTest
       OnPreInit(EventArgs.Empty);
 
     }
+
     /// <summary>
     /// Folder location where the ASPX / ASCX files are stored so that the unit-test harness can load page and control content
     /// </summary>
@@ -111,7 +113,8 @@ namespace Fritz.WebFormsTest
     /// </summary>
     public static bool IsInTestMode
     {
-      get { return HttpContext.Current == null; }
+      get { return (HttpContext.Current == null || 
+          (HttpContext.Current.Items.Contains("IsInTestMode") && (bool)(HttpContext.Current.Items["IsInTestMode"])  )); }
     }
 
     /// <summary>
@@ -224,6 +227,8 @@ namespace Fritz.WebFormsTest
       get { return base.Events; }
     }
 
+    #region Embedded helper classes
+
     public class EmptyTestServer : HttpServerUtilityBase
     {
 
@@ -231,7 +236,93 @@ namespace Fritz.WebFormsTest
 
     }
 
-    public class EmptyHttpContext : HttpContextBase {  }
+    public class EmptyHttpContext : HttpContextBase
+    {
+      public static explicit operator HttpContext(EmptyHttpContext v)
+      {
+        // do something...
+        return new HttpContext(null, null);
+      }
+    }
+
+    #endregion
+
+
+    private MasterPage _master;
+    private bool _preInitWorkComplete = false;
+    public new MasterPage Master
+    {
+      get
+      {
+
+        if (!IsInTestMode) return base.Master;
+
+        CreateMasterInTest();
+
+        return _master;
+
+      }
+    }
+
+    private void CreateMasterInTest()
+    {
+
+      if (MasterPageFile == null) return;
+
+      _master = WebApplicationProxy.GetPageByLocation(MasterPageFile) as MasterPage;
+
+      if (HasControls()) Controls.Clear();
+
+      var contentTemplates = ContentTemplateCollection;
+      _master.SetContentTemplates(contentTemplates);
+      _master.SetOwnerControl(this);
+      _master.InitializeAsUserControl(this.Page);
+      this.Controls.Add(_master);
+
+    }
+
+    internal object MasterPageFileInternal
+    {
+      get
+      {
+
+        var f = typeof(Page).GetField("_masterPageFile", BindingFlags.NonPublic | BindingFlags.Instance);
+        return f.GetValue(this);
+
+      }
+    }
+
+    private IDictionary ContentTemplateCollection
+    {
+      get
+      {
+
+        var p = typeof(Page).GetField("_contentTemplateCollection", BindingFlags.NonPublic | BindingFlags.Instance);
+        return p.GetValue(this) as IDictionary;
+
+      }
+    }
+
+  }
+
+  internal static class MasterPageReflectionExtensions
+  {
+
+    public static void SetContentTemplates(this MasterPage master, IDictionary contentTemplateCollection)
+    {
+
+      var f = typeof(MasterPage).GetField("_contentTemplates", BindingFlags.NonPublic | BindingFlags.Instance);
+      f.SetValue(master, contentTemplateCollection);
+
+    }
+
+    public static void SetOwnerControl(this MasterPage master, TemplateControl owner)
+    {
+
+      var f = typeof(MasterPage).GetField("_ownerControl", BindingFlags.NonPublic | BindingFlags.Instance);
+      f.SetValue(master, owner);
+
+    }
 
 
   }

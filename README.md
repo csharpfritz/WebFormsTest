@@ -28,3 +28,4 @@ The interactions with Page objects are tested in the following way:
 
 This should get you started with some simple testing of interactions in your Page events.
 	 
+Maybe you need to inspect more complex interactions in your event handler methods and the controls on the page.  Use the WebApplicationProxy object to precompile your application and load the complete runtime version of your pages, including all controls and master pages, for testing.

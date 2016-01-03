@@ -29,7 +29,6 @@ namespace Fritz.WebFormsTest
     private HttpContextBase _Context;
     private static readonly BindingFlags AllBindings = BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
-    private readonly AutoEventHandler _AutoEventHandler;
     private EmptyTestServer _TestServer;
 
     public enum WebFormEvent

@@ -62,6 +62,8 @@ namespace Fritz.WebFormsTest
       var mi = this.GetType().GetMethod("__BuildControlTree", BindingFlags.NonPublic | BindingFlags.Instance);
       mi.Invoke(this, new object[] { this });
 
+      HookupAutomaticHandlersInTest();
+
       OnPreInit(EventArgs.Empty);
 
     }
@@ -306,6 +308,16 @@ namespace Fritz.WebFormsTest
         return p.GetValue(this) as IDictionary;
 
       }
+    }
+
+    private void HookupAutomaticHandlersInTest()
+    {
+
+      if (!IsInTestMode) return;
+
+      var mi = typeof(TemplateControl).GetMethod("HookUpAutomaticHandlers", BindingFlags.NonPublic | BindingFlags.Instance);
+      mi.Invoke(this, null);
+
     }
 
   }

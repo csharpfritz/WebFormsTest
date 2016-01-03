@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.UI;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Fritz.WebFormsTest
 {
@@ -29,16 +30,21 @@ namespace Fritz.WebFormsTest
     private HttpContextBase _Context;
     private static readonly BindingFlags AllBindings = BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
-    private readonly AutoEventHandler _AutoEventHandler;
     private EmptyTestServer _TestServer;
 
+    /// <summary>
+    /// The events from a Page that can be triggered within a TestablePage
+    /// </summary>
     public enum WebFormEvent
     {
+      None = 0,
       Init,
       Load,
       PreRender,
       Unload
     }
+
+    private readonly Dictionary<WebFormEvent, bool> _EventsTriggered = new Dictionary<WebFormEvent, bool>();
 
     public TestablePage()
     {
@@ -51,6 +57,9 @@ namespace Fritz.WebFormsTest
 
     }
 
+    /// <summary>
+    /// Prepare the page for testing by triggering all of the setup methods that a Page would normally have triggered when running on a web server
+    /// </summary>
     public void PrepareTests()
     {
 
@@ -88,8 +97,20 @@ namespace Fritz.WebFormsTest
 
     #region Methods / Properties to help test
 
+    public void FireEvent(WebFormEvent e)
+    {
+      FireEvent(e, EventArgs.Empty);
+    }
+
     public void FireEvent(WebFormEvent e, EventArgs args)
     {
+
+      if (_EventsTriggered.ContainsKey(e))
+      {
+        throw new InvalidOperationException($"Previously triggered the {e.ToString()} event");
+      }
+
+      _EventsTriggered.Add(e, true);
 
       switch (e)
       {
@@ -155,6 +176,23 @@ namespace Fritz.WebFormsTest
       return GetType().GetMethod(methodName, AllBindings) != null;
     }
 
+    public void RunToEvent(WebFormEvent evt = WebFormEvent.None)
+    {
+
+      FireEvent(WebFormEvent.Init);
+      if (evt == WebFormEvent.Init) return;
+
+      FireEvent(WebFormEvent.Load);
+      if (evt == WebFormEvent.Load) return;
+
+      FireEvent(WebFormEvent.PreRender);
+      if (evt == WebFormEvent.PreRender) return;
+
+      FireEvent(WebFormEvent.Unload);
+
+
+    }
+
     #endregion
 
     #region Replaced Properties that allow mocking Web Interactions
@@ -191,6 +229,10 @@ namespace Fritz.WebFormsTest
 
     #endregion
 
+    /// <summary>
+    /// Simple handler to add a marker to the end of a page that shows that this is a TestablePage when debugging is enabled
+    /// </summary>
+    /// <param name="e"></param>
     protected override void OnPreRender(EventArgs e)
     {
 
@@ -201,32 +243,6 @@ namespace Fritz.WebFormsTest
         this.Controls.Add(new LiteralControl(COMMENT_MARKER));
       }
 
-    }
-
-    protected override void CreateChildControls()
-    {
-
-      if (IsInTestMode)
-      {
-        Debug.WriteLine("Controls in collection: " + Controls.Count);
-      } else
-      {
-        base.CreateChildControls();
-      }
-
-    }
-
-    public override ControlCollection Controls
-    {
-      get
-      {
-        return base.Controls;
-      }
-    }
-
-    protected internal new EventHandlerList Events
-    {
-      get { return base.Events; }
     }
 
     #region Embedded helper classes
@@ -266,6 +282,9 @@ namespace Fritz.WebFormsTest
       }
     }
 
+    /// <summary>
+    /// If there is a MasterPageFile defined, load the MasterPage and process it for this Page
+    /// </summary>
     private void CreateMasterInTest()
     {
 
@@ -310,6 +329,9 @@ namespace Fritz.WebFormsTest
       }
     }
 
+    /// <summary>
+    /// Trigger the assignment of event handlers to events if they match the prescribed naming convention
+    /// </summary>
     private void HookupAutomaticHandlersInTest()
     {
 
@@ -319,28 +341,6 @@ namespace Fritz.WebFormsTest
       mi.Invoke(this, null);
 
     }
-
-  }
-
-  internal static class MasterPageReflectionExtensions
-  {
-
-    public static void SetContentTemplates(this MasterPage master, IDictionary contentTemplateCollection)
-    {
-
-      var f = typeof(MasterPage).GetField("_contentTemplates", BindingFlags.NonPublic | BindingFlags.Instance);
-      f.SetValue(master, contentTemplateCollection);
-
-    }
-
-    public static void SetOwnerControl(this MasterPage master, TemplateControl owner)
-    {
-
-      var f = typeof(MasterPage).GetField("_ownerControl", BindingFlags.NonPublic | BindingFlags.Instance);
-      f.SetValue(master, owner);
-
-    }
-
 
   }
 

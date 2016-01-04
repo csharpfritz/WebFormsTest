@@ -36,7 +36,7 @@ namespace Fritz.WebFormsTest.Test
       // Arrange
 
       // Act
-      var sut = Precompiler._precompiler.GetPageByLocation<Textbox_StaticId>("/Scenarios/Postback/Textbox_StaticId.aspx");
+      var sut = WebApplicationProxy.GetPageByLocation<Textbox_StaticId>("/Scenarios/Postback/Textbox_StaticId.aspx");
       sut.Context = context.Object;
       sut.PrepareTests();
       sut.FireEvent(TestablePage.WebFormEvent.Init, EventArgs.Empty);

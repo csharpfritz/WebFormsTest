@@ -7,6 +7,8 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Diagnostics;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Fritz.WebFormsTest
 {
@@ -28,16 +30,21 @@ namespace Fritz.WebFormsTest
     private HttpContextBase _Context;
     private static readonly BindingFlags AllBindings = BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
-    private readonly AutoEventHandler _AutoEventHandler;
     private EmptyTestServer _TestServer;
 
+    /// <summary>
+    /// The events from a Page that can be triggered within a TestablePage
+    /// </summary>
     public enum WebFormEvent
     {
+      None = 0,
       Init,
       Load,
       PreRender,
       Unload
     }
+
+    private readonly Dictionary<WebFormEvent, bool> _EventsTriggered = new Dictionary<WebFormEvent, bool>();
 
     public TestablePage()
     {
@@ -50,6 +57,9 @@ namespace Fritz.WebFormsTest
 
     }
 
+    /// <summary>
+    /// Prepare the page for testing by triggering all of the setup methods that a Page would normally have triggered when running on a web server
+    /// </summary>
     public void PrepareTests()
     {
 
@@ -61,9 +71,12 @@ namespace Fritz.WebFormsTest
       var mi = this.GetType().GetMethod("__BuildControlTree", BindingFlags.NonPublic | BindingFlags.Instance);
       mi.Invoke(this, new object[] { this });
 
+      HookupAutomaticHandlersInTest();
+
       OnPreInit(EventArgs.Empty);
 
     }
+
     /// <summary>
     /// Folder location where the ASPX / ASCX files are stored so that the unit-test harness can load page and control content
     /// </summary>
@@ -84,8 +97,20 @@ namespace Fritz.WebFormsTest
 
     #region Methods / Properties to help test
 
+    public void FireEvent(WebFormEvent e)
+    {
+      FireEvent(e, EventArgs.Empty);
+    }
+
     public void FireEvent(WebFormEvent e, EventArgs args)
     {
+
+      if (_EventsTriggered.ContainsKey(e))
+      {
+        throw new InvalidOperationException($"Previously triggered the {e.ToString()} event");
+      }
+
+      _EventsTriggered.Add(e, true);
 
       switch (e)
       {
@@ -111,7 +136,8 @@ namespace Fritz.WebFormsTest
     /// </summary>
     public static bool IsInTestMode
     {
-      get { return HttpContext.Current == null; }
+      get { return (HttpContext.Current == null || 
+          (HttpContext.Current.Items.Contains("IsInTestMode") && (bool)(HttpContext.Current.Items["IsInTestMode"])  )); }
     }
 
     /// <summary>
@@ -150,6 +176,23 @@ namespace Fritz.WebFormsTest
       return GetType().GetMethod(methodName, AllBindings) != null;
     }
 
+    public void RunToEvent(WebFormEvent evt = WebFormEvent.None)
+    {
+
+      FireEvent(WebFormEvent.Init);
+      if (evt == WebFormEvent.Init) return;
+
+      FireEvent(WebFormEvent.Load);
+      if (evt == WebFormEvent.Load) return;
+
+      FireEvent(WebFormEvent.PreRender);
+      if (evt == WebFormEvent.PreRender) return;
+
+      FireEvent(WebFormEvent.Unload);
+
+
+    }
+
     #endregion
 
     #region Replaced Properties that allow mocking Web Interactions
@@ -186,6 +229,10 @@ namespace Fritz.WebFormsTest
 
     #endregion
 
+    /// <summary>
+    /// Simple handler to add a marker to the end of a page that shows that this is a TestablePage when debugging is enabled
+    /// </summary>
+    /// <param name="e"></param>
     protected override void OnPreRender(EventArgs e)
     {
 
@@ -198,31 +245,7 @@ namespace Fritz.WebFormsTest
 
     }
 
-    protected override void CreateChildControls()
-    {
-
-      if (IsInTestMode)
-      {
-        Debug.WriteLine("Controls in collection: " + Controls.Count);
-      } else
-      {
-        base.CreateChildControls();
-      }
-
-    }
-
-    public override ControlCollection Controls
-    {
-      get
-      {
-        return base.Controls;
-      }
-    }
-
-    protected internal new EventHandlerList Events
-    {
-      get { return base.Events; }
-    }
+    #region Embedded helper classes
 
     public class EmptyTestServer : HttpServerUtilityBase
     {
@@ -231,8 +254,93 @@ namespace Fritz.WebFormsTest
 
     }
 
-    public class EmptyHttpContext : HttpContextBase {  }
+    public class EmptyHttpContext : HttpContextBase
+    {
+      public static explicit operator HttpContext(EmptyHttpContext v)
+      {
+        // do something...
+        return new HttpContext(null, null);
+      }
+    }
 
+    #endregion
+
+
+    private MasterPage _master;
+    private bool _preInitWorkComplete = false;
+    public new MasterPage Master
+    {
+      get
+      {
+
+        if (!IsInTestMode) return base.Master;
+
+        CreateMasterInTest();
+
+        return _master;
+
+      }
+    }
+
+    /// <summary>
+    /// If there is a MasterPageFile defined, load the MasterPage and process it for this Page
+    /// </summary>
+    private void CreateMasterInTest()
+    {
+
+      if (MasterPageFile == null) return;
+
+      _master = WebApplicationProxy.GetPageByLocation(MasterPageFile) as MasterPage;
+      WebApplicationProxy.SubstituteDummyHttpContext();
+
+      if (HasControls()) Controls.Clear();
+
+      var contentTemplates = ContentTemplateCollection;
+      _master.SetContentTemplates(contentTemplates);
+      _master.SetOwnerControl(this);
+
+
+      Debug.Assert(HttpContext.Current != null, "HttpContext.Current is missing!");
+
+      _master.InitializeAsUserControl(this.Page);
+      this.Controls.Add(_master);
+
+    }
+
+    internal object MasterPageFileInternal
+    {
+      get
+      {
+
+        var f = typeof(Page).GetField("_masterPageFile", BindingFlags.NonPublic | BindingFlags.Instance);
+        return f.GetValue(this);
+
+      }
+    }
+
+    private IDictionary ContentTemplateCollection
+    {
+      get
+      {
+
+        var p = typeof(Page).GetField("_contentTemplateCollection", BindingFlags.NonPublic | BindingFlags.Instance);
+        return p.GetValue(this) as IDictionary;
+
+      }
+    }
+
+    /// <summary>
+    /// Trigger the assignment of event handlers to events if they match the prescribed naming convention
+    /// </summary>
+    private void HookupAutomaticHandlersInTest()
+    {
+
+      if (!IsInTestMode) return;
+
+      var mi = typeof(TemplateControl).GetMethod("HookUpAutomaticHandlers", BindingFlags.NonPublic | BindingFlags.Instance);
+      mi.Invoke(this, null);
+
+    }
 
   }
 

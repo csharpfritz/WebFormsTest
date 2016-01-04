@@ -13,6 +13,15 @@ namespace Fritz.WebFormsTest.Web {
     public partial class SiteMaster {
         
         /// <summary>
+        /// cheeseburger control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        public global::System.Web.UI.HtmlControls.HtmlGenericControl cheeseburger;
+        
+        /// <summary>
         /// MainContent control.
         /// </summary>
         /// <remarks>

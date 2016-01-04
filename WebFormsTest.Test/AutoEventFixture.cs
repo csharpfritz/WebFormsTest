@@ -40,7 +40,7 @@ namespace Fritz.WebFormsTest.Test
 
     }
 
-    //[Fact]
+    [Fact]
     /// <summary>
     /// Disabled until we fix the AutoEventWireup feature
     /// </summary>
@@ -50,7 +50,7 @@ namespace Fritz.WebFormsTest.Test
       // Arrange
 
       // Act
-      var sut = Precompiler._precompiler.GetPageByLocation<AutoEventWireup>("/AutoEventWireup.aspx");
+      var sut = WebApplicationProxy.GetPageByLocation<AutoEventWireup>("/AutoEventWireup.aspx");
       sut.Context = context.Object;
       sut.PrepareTests();
       sut.FireEvent(WebFormsTest.TestablePage.WebFormEvent.Load, new EventArgs());

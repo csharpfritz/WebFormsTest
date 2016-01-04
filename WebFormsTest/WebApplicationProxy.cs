@@ -43,7 +43,7 @@ namespace Fritz.WebFormsTest
       Dispose(false);
     }
 
-    public static void Create(string rootFolder, bool skipCrawl)
+    public static void Create(string rootFolder, bool skipCrawl = true)
     {
       _Instance = new WebApplicationProxy(rootFolder, skipCrawl);
     }
@@ -98,6 +98,9 @@ namespace Fritz.WebFormsTest
 
     }
 
+    /// <summary>
+    /// Inspect the source code of the application, gathering the page locations and the types at those locations
+    /// </summary>
     private void CrawlWebApplication()
     {
 
@@ -109,8 +112,15 @@ namespace Fritz.WebFormsTest
 
     }
 
+    /// <summary>
+    /// Get a fully instantiated Page at the web location specified
+    /// </summary>
+    /// <param name="location">The web absolute folder location to retrive the Page from</param>
+    /// <returns>The Page object from the specified location</returns>
     public static object GetPageByLocation(string location)
     {
+
+      if (_Instance == null || !_Instance.Initialized) throw new InvalidOperationException("The WebApplicationProxy has not been created and initialized properly");
 
       var returnType = _Instance._compiler.GetCompiledType(location);
       SubstituteDummyHttpContext();
@@ -119,13 +129,17 @@ namespace Fritz.WebFormsTest
 
     }
 
+    /// <summary>
+    /// Get a fully instantiated Page at the web location specified
+    /// </summary>
+    /// <typeparam name="T">The type of the Page to fetch</typeparam>
+    /// <param name="location">The web absolute folder location to retrive the Page from</param>
+    /// <returns>A strongly-typed Page object from the specified location</returns>
     public static T GetPageByLocation<T>(string location) where T : TestablePage
     {
 
-      var returnType = _Instance._compiler.GetCompiledType(location);
-      SubstituteDummyHttpContext();
+      return GetPageByLocation(location) as T;
 
-      return Activator.CreateInstance(returnType) as T;
     }
 
     public static T GetPageByType<T>() where T : TestablePage

@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.UI;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Fritz.WebFormsTest
 {
@@ -36,11 +37,14 @@ namespace Fritz.WebFormsTest
     /// </summary>
     public enum WebFormEvent
     {
+      None = 0,
       Init,
       Load,
       PreRender,
       Unload
     }
+
+    private readonly Dictionary<WebFormEvent, bool> _EventsTriggered = new Dictionary<WebFormEvent, bool>();
 
     public TestablePage()
     {
@@ -93,8 +97,20 @@ namespace Fritz.WebFormsTest
 
     #region Methods / Properties to help test
 
+    public void FireEvent(WebFormEvent e)
+    {
+      FireEvent(e, EventArgs.Empty);
+    }
+
     public void FireEvent(WebFormEvent e, EventArgs args)
     {
+
+      if (_EventsTriggered.ContainsKey(e))
+      {
+        throw new InvalidOperationException($"Previously triggered the {e.ToString()} event");
+      }
+
+      _EventsTriggered.Add(e, true);
 
       switch (e)
       {
@@ -158,6 +174,23 @@ namespace Fritz.WebFormsTest
     private bool IsMethodPresent(string methodName)
     {
       return GetType().GetMethod(methodName, AllBindings) != null;
+    }
+
+    public void RunToEvent(WebFormEvent evt = WebFormEvent.None)
+    {
+
+      FireEvent(WebFormEvent.Init);
+      if (evt == WebFormEvent.Init) return;
+
+      FireEvent(WebFormEvent.Load);
+      if (evt == WebFormEvent.Load) return;
+
+      FireEvent(WebFormEvent.PreRender);
+      if (evt == WebFormEvent.PreRender) return;
+
+      FireEvent(WebFormEvent.Unload);
+
+
     }
 
     #endregion

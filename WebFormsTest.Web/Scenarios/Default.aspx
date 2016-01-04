@@ -14,6 +14,12 @@
         <li><a href="Postback/Textbox_StaticId.aspx" target="_blank">Textbox with StaticID</a></li>
       </ul>
 
+      <h3>Page Events</h3>
+
+      <ul>
+        <li><a href="RunToEvent/VerifyOrder.aspx" target="_blank">Verify Order of Events</a></li>
+      </ul>
+
     </div>
 
   </div>

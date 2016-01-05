@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Routing;
 using Xunit;
 
 namespace Fritz.WebFormsTest.Test
@@ -96,15 +97,18 @@ namespace Fritz.WebFormsTest.Test
     }
 
     [Fact]
-    public void Test()
+    public void VerifyIsInTestModeIsSetInHttpContextCurrent()
     {
 
+      // Arrange
       WebApplicationProxy.SubstituteDummyHttpContext();
+
+      // Act
       HttpContext testContext = HttpContext.Current;
 
+      // Assert
       Assert.NotNull(testContext);
       Assert.True(testContext.Items.Contains("IsInTestMode"));
-
 
     }
 

@@ -12,6 +12,7 @@
 
       <ul>
         <li><a href="Postback/Textbox_StaticId.aspx" target="_blank">Textbox with StaticID</a></li>
+        <li><a href="ControlTree/PageWithUserControl.aspx" target="_blank">Page with UserControl</a></li>
       </ul>
 
       <h3>Page Events</h3>

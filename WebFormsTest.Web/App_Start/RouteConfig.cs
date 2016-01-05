@@ -6,13 +6,16 @@ using Microsoft.AspNet.FriendlyUrls;
 
 namespace Fritz.WebFormsTest
 {
-    public static class RouteConfig
+  public static class RouteConfig
+  {
+    public static void RegisterRoutes(RouteCollection routes)
     {
-        public static void RegisterRoutes(RouteCollection routes)
-        {
-            var settings = new FriendlyUrlSettings();
-            settings.AutoRedirectMode = RedirectMode.Permanent;
-            routes.EnableFriendlyUrls(settings);
-        }
+      var settings = new FriendlyUrlSettings();
+      settings.AutoRedirectMode = RedirectMode.Permanent;
+      // routes.EnableFriendlyUrls(settings);
+
+      routes.MapPageRoute("scenarioDefault", "tests", "~/Scenarios/Default.aspx");
+
     }
+  }
 }

@@ -95,12 +95,16 @@
   <ItemGroup>
     <Compile Include="AutoEventFixture.cs" />
     <Compile Include="BaseFixture.cs" />
+    <Compile Include="Internal\VirtualPathFixture.cs" />
+    <Compile Include="Postback.Auto.Fixture.cs" />
     <Compile Include="Postback.Simple.Fixture.cs" />
     <Compile Include="DefaultPageFixture.cs" />
     <Compile Include="PrecompilerFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RehydrateMasterPageFixture.cs" />
+    <Compile Include="RehydrateUserControlFixture.cs" />
     <Compile Include="RunToEventFixture.cs" />
+    <Compile Include="SetPageStateFixture.cs" />
     <Compile Include="WebApplicationProxyFixture.cs" />
   </ItemGroup>
   <ItemGroup>

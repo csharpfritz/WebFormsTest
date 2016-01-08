@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>WebFormsTest</id>
-    <version>0.4.0</version>
+    <version>0.5.0</version>
     <title>WebFormsTest</title>
     <authors>Jeffrey T. Fritz</authors>
     <owners>csharpfritz</owners>
@@ -15,8 +15,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Unit Test Harness for ASP.NET Web Forms objects</description>
     <summary>Unit test harness to assist in testing code-behind files in ASP.NET Web Forms projects</summary>
-    <releaseNotes>v0.4.0 - Added RunToEvent feature that allows Page events to be triggered in order, stopping at the submitted Page event</releaseNotes>
-    <copyright>Copyright 2015 Jeffrey T. Fritz</copyright>
+    <releaseNotes>v0.5.0 - Added MockPostback and SetPageState methods to TestablePage, handled routing and Server.MapPath</releaseNotes>
+    <copyright>Copyright 2016 Jeffrey T. Fritz</copyright>
     <tags>asp.net test unittest</tags>
   </metadata>
 </package>

@@ -21,12 +21,14 @@ namespace Fritz.WebFormsTest.Test
 
       Uri codeBase = new Uri(GetType().Assembly.CodeBase);
       var currentFolder = new DirectoryInfo(Path.GetDirectoryName(codeBase.LocalPath));
-      var webFolder = currentFolder.Parent.Parent.Parent.GetDirectories("WebFormsTest.Web")[0];
+      WebFolder = currentFolder.Parent.Parent.Parent.GetDirectories("WebFormsTest.Web")[0];
 
-      WebApplicationProxy.Create(webFolder.FullName, true);
+      WebApplicationProxy.Create(WebFolder.FullName, true);
       WebApplicationProxy.Initialize();
 
     }
+
+    public DirectoryInfo WebFolder { get; private set; }
 
     public void Dispose()
     {

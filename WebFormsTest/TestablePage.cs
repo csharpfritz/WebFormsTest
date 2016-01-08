@@ -30,7 +30,7 @@ namespace Fritz.WebFormsTest
     private HttpContextBase _Context;
     private static readonly BindingFlags AllBindings = BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
-    private EmptyTestServer _TestServer;
+    private TestServer _TestServer;
 
     /// <summary>
     /// The events from a Page that can be triggered within a TestablePage
@@ -156,8 +156,11 @@ namespace Fritz.WebFormsTest
     {
 
       // Ensure that the control structure is available
-      // TODO: This is not actually loading the control hierarchy
       EnsureChildControls();
+
+      // Set the local fields that the postData SHOULD have come from
+      this.Set_RequestValueCollection(postData);
+      this.Set_UnvalidatedRequestValueCollection(postData);
 
       // Load the data
       var hiddenMethod = typeof(Page).GetMethod("ProcessPostData", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
@@ -193,6 +196,25 @@ namespace Fritz.WebFormsTest
 
     }
 
+
+    public TestablePage SetPageState<T>(string controlId, Action<T> controlConfig) where T : Control
+    {
+
+      // Prevent this method from being called by non-test operations
+      if (!IsInTestMode) throw new InvalidOperationException("This method should only be run in Test mode");
+      if (!WebApplicationProxy.IsInitialized) throw new InvalidOperationException("A WebApplicationProxy is needed to set page state");
+
+      var c = this.FindControl(controlId);
+
+      if (c == null) throw new ArgumentException($"Unable to locate the control '{controlId}'");
+      if (!(c is T)) throw new ArgumentException($"The control '{controlId}' is not of type '{typeof(T).FullName}'");
+
+      controlConfig(c as T);
+
+      return this;
+
+    }
+
     #endregion
 
     #region Replaced Properties that allow mocking Web Interactions
@@ -218,13 +240,49 @@ namespace Fritz.WebFormsTest
 
         if (IsInTestMode)
         {
-          if (_TestServer == null) _TestServer = new EmptyTestServer();
+          if (_TestServer == null) _TestServer = new TestServer();
           return _TestServer;
         }
 
         return Context.Server;
 
       }
+    }
+
+    public override bool EnableEventValidation
+    {
+      get
+      {
+
+        // turn off event validation when in test mode
+
+        return !IsInTestMode ? base.EnableEventValidation : false;
+      }
+
+      set
+      {
+        base.EnableEventValidation = value;
+      }
+    }
+
+    #endregion
+
+    #region Reflection Helpers to get to non-public root fields
+
+    private void Set_RequestValueCollection(NameValueCollection newValue)
+    {
+
+      var field = typeof(Page).GetField("_requestValueCollection", BindingFlags.NonPublic | BindingFlags.Instance);
+      field.SetValue(this, newValue);
+
+    }
+
+    private void Set_UnvalidatedRequestValueCollection(NameValueCollection newValue)
+    {
+
+      var field = typeof(Page).GetField("_unvalidatedRequestValueCollection", BindingFlags.NonPublic | BindingFlags.Instance);
+      field.SetValue(this, newValue);
+
     }
 
     #endregion
@@ -247,20 +305,15 @@ namespace Fritz.WebFormsTest
 
     #region Embedded helper classes
 
-    public class EmptyTestServer : HttpServerUtilityBase
-    {
-
-      public override int ScriptTimeout { get; set; }
-
-    }
-
     public class EmptyHttpContext : HttpContextBase
     {
+
       public static explicit operator HttpContext(EmptyHttpContext v)
       {
         // do something...
         return new HttpContext(null, null);
       }
+
     }
 
     #endregion

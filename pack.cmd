@@ -9,7 +9,7 @@ md .nuget\lib\net40
 md dist
 
 :: Copy the DLLs to the correct folder
-copy .\WebFormsTest\bin\%1\WebFormsTest.dll .\.nuget\lib\net40
+copy .\WebFormsTest\bin\%1\Fritz.WebFormsTest.dll .\.nuget\lib\net40
 
 :: Pack the nupkg
 .\packages\NuGet.CommandLine.3.3.0\tools\nuget pack WebFormsTest.nuspec -BasePath .nuget -OutputDirectory dist

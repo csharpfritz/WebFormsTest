@@ -24,7 +24,6 @@ namespace Fritz.WebFormsTest.Test
       WebFolder = currentFolder.Parent.Parent.Parent.GetDirectories("WebFormsTest.Web")[0];
 
       WebApplicationProxy.Create(WebFolder.FullName, true);
-      WebApplicationProxy.Initialize();
 
     }
 

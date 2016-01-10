@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 namespace Fritz.WebFormsInspect.Test
 {
   [Collection("Precompiler collection")]
-  public class WebApplicationProxyFixture
+  public class WebApplicationProxyFixture : BaseFixture
   {
 
     private PrecompilerFixture _Fixture;
@@ -121,6 +121,23 @@ namespace Fritz.WebFormsInspect.Test
       // Assert
       _testHelper.WriteLine("Web Folder Name: " + _Fixture.WebFolder.FullName);
       Assert.Equal(System.IO.Path.Combine(_Fixture.WebFolder.FullName, "Scenarios"), resultFolder);
+
+    }
+
+    [Fact]
+    public void GetPageByLocationShouldHandleContext()
+    {
+
+      // Arrange
+      var myDict = new Dictionary<string,string>();
+      myDict.Add("test", "test");
+      base.context.SetupGet(c => c.Items).Returns(myDict);
+
+      // Act
+      var defaultPage = WebApplicationProxy.GetPageByLocation<_Default>("/Default.aspx", context.Object);
+
+      // Assert
+      Assert.True(defaultPage.Context.Items.Contains("test"));
 
     }
 

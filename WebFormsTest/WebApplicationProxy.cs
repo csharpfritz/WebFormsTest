@@ -45,6 +45,12 @@ namespace Fritz.WebFormsTest
     public static void Create(string rootFolder, bool skipCrawl = true)
     {
       _Instance = new WebApplicationProxy(rootFolder, skipCrawl);
+
+      InjectTestValuesIntoHttpRuntime();
+      SubstituteDummyHttpContext();
+
+      _Instance.InitializeInternal();
+
     }
 
     /// <summary>
@@ -81,16 +87,8 @@ namespace Fritz.WebFormsTest
 
     }
 
-    public static void Initialize()
-    {
-
-      if (_Instance.Initialized) throw new InvalidOperationException("WebApplicationProxy already exists");
-
-      InjectTestValuesIntoHttpRuntime();
-      SubstituteDummyHttpContext();
-
-      _Instance.InitializeInternal();
-    }
+    [Obsolete("Now initializing during Create")]
+    public static void Initialize() {  }
 
     /// <summary>
     /// Check if the Proxy is running
@@ -130,7 +128,7 @@ namespace Fritz.WebFormsTest
     /// </summary>
     /// <param name="location">The web absolute folder location to retrive the Page from</param>
     /// <returns>The Page object from the specified location</returns>
-    public static object GetPageByLocation(string location)
+    public static object GetPageByLocation(string location, HttpContextBase context = null)
     {
 
       if (_Instance == null || !_Instance.Initialized) throw new InvalidOperationException("The WebApplicationProxy has not been created and initialized properly");
@@ -138,7 +136,16 @@ namespace Fritz.WebFormsTest
       var returnType = _Instance._compiler.GetCompiledType(location);
       SubstituteDummyHttpContext();
 
-      return Activator.CreateInstance(returnType);
+      var outObj = Activator.CreateInstance(returnType);
+
+      if (context != null)
+      {
+        var pi = outObj.GetType().GetProperty("Context");
+        pi.SetValue(outObj, context, null);
+      }
+
+      return outObj;
+
 
     }
 
@@ -148,10 +155,10 @@ namespace Fritz.WebFormsTest
     /// <typeparam name="T">The type of the Page to fetch</typeparam>
     /// <param name="location">The web absolute folder location to retrive the Page from</param>
     /// <returns>A strongly-typed Page object from the specified location</returns>
-    public static T GetPageByLocation<T>(string location) where T : TestablePage
+    public static T GetPageByLocation<T>(string location, HttpContextBase context = null) where T : TestablePage
     {
 
-      return GetPageByLocation(location) as T;
+      return GetPageByLocation(location, context) as T;
 
     }
 

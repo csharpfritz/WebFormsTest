@@ -320,7 +320,6 @@ namespace Fritz.WebFormsTest
 
 
     private MasterPage _master;
-    private bool _preInitWorkComplete = false;
     public new MasterPage Master
     {
       get

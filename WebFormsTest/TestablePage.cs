@@ -57,10 +57,13 @@ namespace Fritz.WebFormsTest
 
     }
 
+    [Obsolete("Now intiated as this page is fetched by WebApplicationProxy.GetPage - does nothing when called")]
+    public void PrepareTests() { }
+
     /// <summary>
     /// Prepare the page for testing by triggering all of the setup methods that a Page would normally have triggered when running on a web server
     /// </summary>
-    public void PrepareTests()
+    internal void PrepareForTest()
     {
 
       // This is a test-only concern

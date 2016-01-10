@@ -136,13 +136,16 @@ namespace Fritz.WebFormsTest
       var returnType = _Instance._compiler.GetCompiledType(location);
       SubstituteDummyHttpContext();
 
-      var outObj = Activator.CreateInstance(returnType);
+      dynamic outObj = Activator.CreateInstance(returnType);
 
       if (context != null)
       {
         var pi = outObj.GetType().GetProperty("Context");
         pi.SetValue(outObj, context, null);
       }
+
+      // Prepare the page for testing
+      if (outObj is TestablePage) outObj.PrepareForTest();
 
       return outObj;
 

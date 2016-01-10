@@ -29,7 +29,6 @@ namespace Fritz.WebFormsTest.Test
       // Act
       var sut = WebApplicationProxy.GetPageByLocation<PageWithUserControl>("/Scenarios/ControlTree/PageWithUserControl.aspx");
       sut.Context = context.Object;
-      sut.PrepareTests();
       sut.RunToEvent(TestablePage.WebFormEvent.PreRender);
 
       // Assert

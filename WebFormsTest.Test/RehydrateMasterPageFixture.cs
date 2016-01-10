@@ -50,7 +50,6 @@ namespace Fritz.WebFormsInspect.Test
       // Act
       var sut = WebApplicationProxy.GetPageByLocation<_Default>("/default.aspx");
       sut.Context = new TestablePage.EmptyHttpContext();
-      sut.PrepareTests();
 
       // Assert
       Assert.NotNull(sut.Master);

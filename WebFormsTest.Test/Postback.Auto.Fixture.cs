@@ -28,9 +28,7 @@ namespace Fritz.WebFormsTest.Test
       // Arrange
 
       // Act
-      var sut = WebApplicationProxy.GetPageByLocation<Buttons_AutoId>("/Scenarios/ControlTree/Buttons_AutoId.aspx");
-      sut.Context = context.Object;
-      sut.PrepareTests();
+      var sut = WebApplicationProxy.GetPageByLocation<Buttons_AutoId>("/Scenarios/ControlTree/Buttons_AutoId.aspx", context.Object);
 
       // Run to PreRender, the buttons are in a FormView that is databound in Load
       sut.RunToEvent(TestablePage.WebFormEvent.PreRender);

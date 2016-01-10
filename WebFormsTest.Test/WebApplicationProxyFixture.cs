@@ -48,10 +48,8 @@ namespace Fritz.WebFormsInspect.Test
     {
 
       var sut = WebApplicationProxy.GetPageByLocation("/Default.aspx") as _Default;
-
       sut.Context = new TestablePage.EmptyHttpContext();
 
-      sut.PrepareTests();
 
       _testHelper.WriteLine("Controls: " + sut.Controls.Count);
       Assert.NotEqual(0, sut.Controls.Count);

@@ -50,9 +50,7 @@ namespace Fritz.WebFormsTest.Test
       // Arrange
 
       // Act
-      var sut = WebApplicationProxy.GetPageByLocation<AutoEventWireup>("/AutoEventWireup.aspx");
-      sut.Context = context.Object;
-      sut.PrepareTests();
+      var sut = WebApplicationProxy.GetPageByLocation<AutoEventWireup>("/AutoEventWireup.aspx", context.Object);
       sut.FireEvent(WebFormsTest.TestablePage.WebFormEvent.Load, new EventArgs());
 
       // Assert

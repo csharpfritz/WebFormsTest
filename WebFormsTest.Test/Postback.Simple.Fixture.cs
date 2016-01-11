@@ -24,10 +24,7 @@ namespace Fritz.WebFormsTest.Test
     public Postback_Simple_Fixture(ITestOutputHelper output, PrecompilerFixture precompiler)
     {
       this.output = output;
-      this.Precompiler = precompiler;
     }
-
-    public PrecompilerFixture Precompiler { get; private set; }
 
     [Fact]
     public void TextboxAddedToControlSet()
@@ -36,9 +33,7 @@ namespace Fritz.WebFormsTest.Test
       // Arrange
 
       // Act
-      var sut = WebApplicationProxy.GetPageByLocation<Textbox_StaticId>("/Scenarios/Postback/Textbox_StaticId.aspx");
-      sut.Context = context.Object;
-      sut.PrepareTests();
+      var sut = WebApplicationProxy.GetPageByLocation<Textbox_StaticId>("/Scenarios/Postback/Textbox_StaticId.aspx", context.Object);
       sut.FireEvent(TestablePage.WebFormEvent.Init, EventArgs.Empty);
 
       // Assert
@@ -49,7 +44,43 @@ namespace Fritz.WebFormsTest.Test
       output.WriteLine("Textbox found with text: " + tb.Text);
       Assert.Equal("Initial Text", tb.Text);
 
+    }
 
+    [Fact]
+    public void IsPostbackShouldBeTrue()
+    {
+
+      // Arrange
+      var postData = new NameValueCollection();
+
+      // Act
+      var sut = WebApplicationProxy.GetPageByLocation<Textbox_StaticId>("/Scenarios/Postback/Textbox_StaticId.aspx");
+      sut.Context = context.Object;
+      sut.MockPostData(postData);
+      sut.RunToEvent(TestablePage.WebFormEvent.PreRender);
+
+      // Assert
+      Assert.True(sut.IsPostBack, "Page 'IsPostBack' is not set to true");
+
+    }
+
+    [Fact]
+    public void TextboxContentChanged()
+    {
+
+      // Arrange
+      var postData = new NameValueCollection();
+      const string NEW_TEXT = "Posted back";
+      postData.Add("TestTextboxControl", NEW_TEXT);
+
+      // Act
+      var sut = WebApplicationProxy.GetPageByLocation<Textbox_StaticId>("/Scenarios/Postback/Textbox_StaticId.aspx");
+      sut.Context = context.Object;
+      sut.MockPostData(postData);
+      sut.RunToEvent(TestablePage.WebFormEvent.PreRender);
+
+      // Assert
+      Assert.Equal(NEW_TEXT, sut.TestControl.Text);
     }
 
   }

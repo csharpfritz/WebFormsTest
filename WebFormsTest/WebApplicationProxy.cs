@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Web;
+using System.Web.Caching;
 using System.Web.Compilation;
 
 namespace Fritz.WebFormsTest
@@ -18,7 +19,6 @@ namespace Fritz.WebFormsTest
   {
 
     private static WebApplicationProxy _Instance;
-    private string _WebRootFolder;
     private readonly Dictionary<Type, string> _LocationTypeMap = new Dictionary<Type, string>();
     private ClientBuildManager _compiler;
     private string _TargetFolder;
@@ -33,7 +33,7 @@ namespace Fritz.WebFormsTest
     private WebApplicationProxy(string rootFolder, bool skipCrawl)
     {
 
-      _WebRootFolder = rootFolder;
+      WebRootFolder = rootFolder;
       _SkipCrawl = skipCrawl;
 
     }
@@ -46,6 +46,12 @@ namespace Fritz.WebFormsTest
     public static void Create(string rootFolder, bool skipCrawl = true)
     {
       _Instance = new WebApplicationProxy(rootFolder, skipCrawl);
+
+      InjectTestValuesIntoHttpRuntime();
+      SubstituteDummyHttpContext();
+
+      _Instance.InitializeInternal();
+
     }
 
     /// <summary>
@@ -63,26 +69,32 @@ namespace Fritz.WebFormsTest
 
       _TargetFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
+      // Can this go async?
       _compiler = new ClientBuildManager(@"/",
-        _WebRootFolder,
+        WebRootFolder,
         _TargetFolder,
         new ClientBuildManagerParameter() { PrecompilationFlags = PrecompilationFlags.ForceDebug });
       _compiler.PrecompileApplication();
 
+
+      // Async?
       CrawlWebApplication();
+
+      Type appType = GetHttpApplicationType();
+      WebApplicationProxy.Application = Activator.CreateInstance(appType) as HttpApplication;
+      TriggerApplicationStart(WebApplicationProxy.Application);
 
       Initialized = true;
 
     }
 
-    public static void Initialize()
-    {
+    [Obsolete("Now initializing during Create")]
+    public static void Initialize() {  }
 
-      InjectTestValuesIntoHttpRuntime();
-      SubstituteDummyHttpContext();
-
-      _Instance.InitializeInternal();
-    }
+    /// <summary>
+    /// Check if the Proxy is running
+    /// </summary>
+    public static bool IsInitialized {  get { return _Instance != null ? _Instance.Initialized : false; } }
 
     /// <summary>
     /// Add some needed configuration to the HttpRuntime so that it thinks we are running in a Web Service
@@ -94,7 +106,7 @@ namespace Fritz.WebFormsTest
       var theRunTime = getRunTime.GetValue(null) as HttpRuntime;
 
       var p = typeof(HttpRuntime).GetField("_appDomainAppVPath", BindingFlags.NonPublic | BindingFlags.Instance);
-      p.SetValue(theRunTime, CreateVirtualPath("/"));
+      p.SetValue(theRunTime, VirtualPathWrapper.Create("/").VirtualPath);
 
     }
 
@@ -117,7 +129,7 @@ namespace Fritz.WebFormsTest
     /// </summary>
     /// <param name="location">The web absolute folder location to retrive the Page from</param>
     /// <returns>The Page object from the specified location</returns>
-    public static object GetPageByLocation(string location)
+    public static object GetPageByLocation(string location, HttpContextBase context = null)
     {
 
       if (_Instance == null || !_Instance.Initialized) throw new InvalidOperationException("The WebApplicationProxy has not been created and initialized properly");
@@ -125,7 +137,19 @@ namespace Fritz.WebFormsTest
       var returnType = _Instance._compiler.GetCompiledType(location);
       SubstituteDummyHttpContext();
 
-      return Activator.CreateInstance(returnType);
+      dynamic outObj = Activator.CreateInstance(returnType);
+
+      if (context != null)
+      {
+        var pi = outObj.GetType().GetProperty("Context");
+        pi.SetValue(outObj, context, null);
+      }
+
+      // Prepare the page for testing
+      if (outObj is TestablePage) outObj.PrepareForTest();
+
+      return outObj;
+
 
     }
 
@@ -135,10 +159,10 @@ namespace Fritz.WebFormsTest
     /// <typeparam name="T">The type of the Page to fetch</typeparam>
     /// <param name="location">The web absolute folder location to retrive the Page from</param>
     /// <returns>A strongly-typed Page object from the specified location</returns>
-    public static T GetPageByLocation<T>(string location) where T : TestablePage
+    public static T GetPageByLocation<T>(string location, HttpContextBase context = null) where T : TestablePage
     {
 
-      return GetPageByLocation(location) as T;
+      return GetPageByLocation(location, context) as T;
 
     }
 
@@ -162,6 +186,27 @@ namespace Fritz.WebFormsTest
 
       return GetPageByLocation(locn);
 
+    }
+
+    public static HttpApplication Application
+    {
+      get; private set;
+    }
+
+    public static Cache Cache
+    {
+      get
+      {
+
+        if (HttpContext.Current == null) SubstituteDummyHttpContext();
+        return HttpContext.Current.Cache;
+
+      }
+    }
+
+    public static string WebRootFolder
+    {
+      get; private set;
     }
 
     public static void DisposeIt()
@@ -226,32 +271,75 @@ namespace Fritz.WebFormsTest
     private static HttpRequest GetSimpleHttpRequest(string path)
     {
 
-      var vpType = GetVirtualPathType();
-      var ctor = typeof(HttpRequest).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { vpType, typeof(String) }, null);
+      var ctor = typeof(HttpRequest).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { VirtualPathWrapper.VirtualPathType, typeof(String) }, null);
 
-      return ctor.Invoke(new[] { CreateVirtualPath(path), string.Empty }) as HttpRequest;
-
-    }
-
-    #region Helper methods to access the internal System.Web.VirtualPath type
-
-    private static object CreateVirtualPath(string path)
-    {
-      Type vpType = GetVirtualPathType();
-
-      var mi = vpType.GetMethod("Create", new[] { typeof(string) });
-
-      var outObj = mi.Invoke(null, new object[] { path });
-
-      return outObj;
+      return ctor.Invoke(new object[] { VirtualPathWrapper.Create(path).VirtualPath, string.Empty }) as HttpRequest;
 
     }
 
-    private static Type GetVirtualPathType()
+    private static VirtualPathWrapper _BaseVirtualPath;
+    /// <summary>
+    /// A VirtualPath reference to the root of the application
+    /// </summary>
+    internal static VirtualPathWrapper BaseVirtualPath
     {
-      var a = typeof(System.Web.UI.Page).Assembly;
-      var vpType = a.GetType("System.Web.VirtualPath");
-      return vpType;
+      get
+      {
+        if (_BaseVirtualPath == null)
+        {
+          _BaseVirtualPath = VirtualPathWrapper.CreateAbsolute(WebRootFolder);
+        }
+        return _BaseVirtualPath;
+      }
+    }
+
+    #region Private Methods
+
+    /// <summary>
+    /// Get the HttpApplication Type (typically named Global) from the application
+    /// </summary>
+    /// <returns></returns>
+    internal static Type GetHttpApplicationType()
+    {
+
+      // Force the web application to be loaded 
+      _Instance._compiler.GetCompiledType("/Default.aspx");
+
+      // Search the AppDomain of loaded types that inherit from HttpApplication, starting with "Global"
+      Type httpApp = typeof(HttpApplication);
+
+      Type outType;
+
+      // Blacklist assembly name prefixes
+      var blacklist = new string[] { "Microsoft.", "System.", "mscorlib", "xunit." };
+
+      var assembliesToScan = AppDomain.CurrentDomain.GetAssemblies().Where(a => !blacklist.Any(b => a.FullName.StartsWith(b))).ToArray();
+      var theAssembly = assembliesToScan.FirstOrDefault(a =>
+      {
+        bool outValue = false;
+        try
+        {
+          outValue = a.GetTypes().FirstOrDefault(t => t.FullName.EndsWith(".Global") && (t.BaseType == httpApp)) != null;
+        }
+        catch
+        {
+          outValue = false;
+        }
+        return outValue;
+      });
+      outType = theAssembly.GetTypes().First(t => t.BaseType == httpApp);
+
+      return outType;
+
+    }
+
+
+    private static void TriggerApplicationStart(HttpApplication app)
+    {
+
+      var mi = app.GetType().GetMethod("Application_Start", BindingFlags.Instance | BindingFlags.NonPublic);
+      mi.Invoke(app, new object[] { app, EventArgs.Empty });
+
     }
 
     #endregion

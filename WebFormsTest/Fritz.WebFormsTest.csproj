@@ -51,6 +51,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MasterPageReflectionExtensions.cs" />
+    <Compile Include="TestServer.cs" />
+    <Compile Include="VirtualPathWrapper.cs" />
     <Compile Include="WebApplicationProxy.cs" />
     <Compile Include="TestablePage.cs">
       <SubType>ASPXCodeBehind</SubType>

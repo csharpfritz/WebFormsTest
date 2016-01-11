@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Web;
+using System.Web.Caching;
 using System.Web.Compilation;
 
 namespace Fritz.WebFormsTest
@@ -190,6 +191,17 @@ namespace Fritz.WebFormsTest
     public static HttpApplication Application
     {
       get; private set;
+    }
+
+    public static Cache Cache
+    {
+      get
+      {
+
+        if (HttpContext.Current == null) SubstituteDummyHttpContext();
+        return HttpContext.Current.Cache;
+
+      }
     }
 
     public static string WebRootFolder

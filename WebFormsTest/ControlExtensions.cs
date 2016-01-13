@@ -24,6 +24,8 @@ namespace Fritz.WebFormsTest
       // Locate the event
       var ei = ctrl.GetType().GetEvent(eventName, BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public);
 
+      if (ei == null) throw new ArgumentException($"Cannot locate the event '{eventName}' on the control");
+
       var raiseMethod = ei.GetRaiseMethod(true);
       if (raiseMethod != null)
       {
@@ -37,6 +39,9 @@ namespace Fritz.WebFormsTest
         onMethod.Invoke(ctrl, new object[] { args });
         return;
       }
+
+      // Should only reach here if the event handlers raise method was not found for the event submitted
+      throw new ArgumentException($"Unable to find a suitable raise method to trigger the event {eventName}");
 
     }
 

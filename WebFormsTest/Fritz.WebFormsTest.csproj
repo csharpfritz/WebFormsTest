@@ -50,6 +50,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ControlExtensions.cs" />
     <Compile Include="MasterPageReflectionExtensions.cs" />
     <Compile Include="TestServer.cs" />
     <Compile Include="VirtualPathWrapper.cs" />

@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Web;
+using System.Web.Caching;
 using System.Web.Compilation;
 
 namespace Fritz.WebFormsTest
@@ -192,6 +193,17 @@ namespace Fritz.WebFormsTest
       get; private set;
     }
 
+    public static Cache Cache
+    {
+      get
+      {
+
+        if (HttpContext.Current == null) SubstituteDummyHttpContext();
+        return HttpContext.Current.Cache;
+
+      }
+    }
+
     public static string WebRootFolder
     {
       get; private set;
@@ -256,7 +268,7 @@ namespace Fritz.WebFormsTest
     /// </summary>
     /// <param name="path">Location requested</param>
     /// <returns></returns>
-    private static HttpRequest GetSimpleHttpRequest(string path)
+    internal static HttpRequest GetSimpleHttpRequest(string path)
     {
 
       var ctor = typeof(HttpRequest).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { VirtualPathWrapper.VirtualPathType, typeof(String) }, null);
@@ -333,5 +345,7 @@ namespace Fritz.WebFormsTest
     #endregion
 
   }
+
+   
 
 }

@@ -15,7 +15,7 @@
 
       <EmptyDataTemplate>
 
-        <asp:Button runat="server" ID="buttonA" Text="Button A" OnClick="buttonA_Click" />
+        <asp:Button runat="server" ID="buttonA" Text="Button A" OnClick="buttonA_Click" OnCommand="buttonA_Command" CommandName="Caption" />
 
         <asp:Button runat="server" ID="buttonB" Text="Button B" Enabled="false" OnClick="buttonB_Click" />
 

@@ -37,5 +37,13 @@ namespace Fritz.WebFormsTest.Web.Scenarios.ControlTree
       ButtonA.Enabled = true;
       ButtonB.Enabled = false;
     }
+
+    protected void buttonA_Command(object sender, CommandEventArgs e)
+    {
+
+      if (e.CommandName == "Caption")
+        ButtonA.Text = e.CommandArgument.ToString();
+
+    }
   }
 }

@@ -268,7 +268,7 @@ namespace Fritz.WebFormsTest
     /// </summary>
     /// <param name="path">Location requested</param>
     /// <returns></returns>
-    private static HttpRequest GetSimpleHttpRequest(string path)
+    internal static HttpRequest GetSimpleHttpRequest(string path)
     {
 
       var ctor = typeof(HttpRequest).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { VirtualPathWrapper.VirtualPathType, typeof(String) }, null);
@@ -345,5 +345,7 @@ namespace Fritz.WebFormsTest
     #endregion
 
   }
+
+   
 
 }

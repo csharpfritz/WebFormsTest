@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="ControlExtensions.cs" />
     <Compile Include="MasterPageReflectionExtensions.cs" />
+    <Compile Include="TestHttpContext.cs" />
     <Compile Include="TestServer.cs" />
     <Compile Include="VirtualPathWrapper.cs" />
     <Compile Include="WebApplicationProxy.cs" />

@@ -8,7 +8,7 @@ using System.Web.UI.WebControls;
 
 namespace Fritz.WebFormsTest.Web
 {
-  public partial class _Default : TestablePage
+  public partial class _Default : Page
   {
 
     public const string LOAD_INDICATOR = "<!-- LOAD WAS CALLED -->";
@@ -38,5 +38,15 @@ namespace Fritz.WebFormsTest.Web
 
 
     }
+
+    protected override void OnPreRender(EventArgs e)
+    {
+
+      base.OnPreRender(e);
+
+      this.Controls.Add(new LiteralControl("<!-- Default Page -->"));
+
+    }
+
   }
 }

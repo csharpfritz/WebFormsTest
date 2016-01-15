@@ -1,16 +1,20 @@
 ﻿using Fritz.WebFormsTest;
+using Fritz.WebFormsTest.Internal;
 using Fritz.WebFormsTest.Test;
 using Fritz.WebFormsTest.Web;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Optimization;
 using System.Web.Routing;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Fritz.WebFormsInspect.Test
+namespace Fritz.WebFormsTest.Test
 {
   [Collection("Precompiler collection")]
   public class WebApplicationProxyFixture : BaseFixture
@@ -24,7 +28,7 @@ namespace Fritz.WebFormsInspect.Test
       _Fixture = fixture;
 
       _testHelper = helper;
-      _testHelper.WriteLine("Target folder: " + WebApplicationProxy.WebApplicationRootFolder);
+      _testHelper.WriteLine("Target folder: " + WebApplicationProxy.WebRootFolder);
     }
 
     [Fact]
@@ -48,7 +52,6 @@ namespace Fritz.WebFormsInspect.Test
     {
 
       var sut = WebApplicationProxy.GetPageByLocation("/Default.aspx") as _Default;
-      sut.Context = new TestablePage.EmptyHttpContext();
 
 
       _testHelper.WriteLine("Controls: " + sut.Controls.Count);
@@ -82,6 +85,20 @@ namespace Fritz.WebFormsInspect.Test
 
       // Assert
       Assert.NotNull(t);
+
+    }
+
+    [Fact]
+    public void HttpApplicationStateShouldNotBeNull()
+    {
+
+      // Arrange
+
+      // Act
+
+
+      // Assert
+      Assert.NotNull(WebApplicationProxy.Application.Application);
 
     }
 
@@ -127,15 +144,30 @@ namespace Fritz.WebFormsInspect.Test
     {
 
       // Arrange
-      var myDict = new Dictionary<string,string>();
-      myDict.Add("test", "test");
-      base.context.SetupGet(c => c.Items).Returns(myDict);
+      Action<HttpContext> addContext = new Action<HttpContext>(ctx => ctx.Items.Add("test", "test"));
+      var defaultPage = WebApplicationProxy.GetPageByLocation<_Default>("/Default.aspx", addContext);
 
       // Act
-      var defaultPage = WebApplicationProxy.GetPageByLocation<_Default>("/Default.aspx", context.Object);
+      //HttpContext.Current.Items.Add("test", "test");
+      //var myDict = new Dictionary<string, string>();
+      //myDict.Add("test", "test");
+      //base.context.SetupGet(c => c.Items).Returns(myDict);
 
       // Assert
-      Assert.True(defaultPage.Context.Items.Contains("test"));
+      Assert.True(defaultPage.Context().Items.Contains("test"));
+
+    }
+
+    [Fact(Skip = "true")]
+    public void SupportBundleConfig()
+    {
+
+      // Arrange
+
+      // Act
+      BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+      // Assert
 
     }
 

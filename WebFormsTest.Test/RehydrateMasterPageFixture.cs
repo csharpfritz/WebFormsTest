@@ -1,4 +1,5 @@
 ﻿using Fritz.WebFormsTest;
+using Fritz.WebFormsTest.Internal;
 using Fritz.WebFormsTest.Web;
 using Fritz.WebFormsTest.Web.Scenarios.Postback;
 using System;
@@ -8,17 +9,19 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Hosting;
+using System.Web.UI;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Fritz.WebFormsInspect.Test
+namespace Fritz.WebFormsTest.Test
 {
 
   /// <summary>
   /// A fixture that will inspect to ensure that the MasterPage is hydrated properly in a page
   /// </summary>
   [Collection("Precompiler collection")]
-  public class RehydrateMasterPageFixture 
+  public class RehydrateMasterPageFixture : BaseFixture
   {
     private ITestOutputHelper _helper;
 
@@ -49,14 +52,15 @@ namespace Fritz.WebFormsInspect.Test
 
       // Act
       var sut = WebApplicationProxy.GetPageByLocation<_Default>("/default.aspx");
-      sut.Context = new TestablePage.EmptyHttpContext();
+
+      _helper.WriteLine($"TopLevelFilesCompiledCompleted: {BuildManagerWrapper.TopLevelFilesCompiledCompleted}");
+       _helper.WriteLine($"MemoryCache == null: {BuildManagerWrapper.MemoryCache == null}");
 
       // Assert
       Assert.NotNull(sut.Master);
       _helper.WriteLine("Master Page Cheeseburger: " + ((SiteMaster)sut.Master).cheeseburger);
 
     }
-
 
     /// <summary>
     /// This is a discovery unit test, helping to verify that MasterPageFile is null when the page directive is not set

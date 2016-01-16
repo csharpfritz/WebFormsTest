@@ -305,34 +305,28 @@ namespace Fritz.WebFormsTest
       // Force the web application to be loaded 
       _Instance._compiler.GetCompiledType("/Default.aspx");
 
-      // Search the AppDomain of loaded types that inherit from HttpApplication, starting with "Global"
+      // Search the AppDomain of loaded types that inherit from HttpApplication, contain "Global" and aren't abstract. This logic supports base classes for Global
       Type httpApp = typeof(HttpApplication);
-
-      Type outType;
 
       // Blacklist assembly name prefixes
       var blacklist = new string[] { "Microsoft.", "System", "mscorlib", "xunit." };
 
       var assembliesToScan = AppDomain.CurrentDomain.GetAssemblies().Where(a => !blacklist.Any(b => a.FullName.StartsWith(b))).ToArray();
-      var theAssembly = assembliesToScan.FirstOrDefault(a =>
-      {
-        bool outValue = false;
-        try
-        {
-          outValue = a.GetTypes().FirstOrDefault(t => t.FullName.EndsWith(".Global") && (t.BaseType == httpApp)) != null;
-        }
-        catch
-        {
-          outValue = false;
-        }
-        return outValue;
-      });
-      outType = theAssembly.GetTypes().First(t => t.BaseType == httpApp);
+      var matchingTypes = assembliesToScan.SelectMany(
+                  a => a.GetTypes().Where(
+                          t => !t.IsAbstract
+                              && t.FullName.Contains("Global")
+                              && httpApp.IsAssignableFrom(t)
+                    ));
 
-      return outType;
+      if (matchingTypes.Count() > 1)
+      {
+        // Throw exception??
+        return null;
+      }
+      return matchingTypes.FirstOrDefault();
 
     }
-
 
     private static void TriggerApplicationStart(HttpApplication app)
     {

@@ -311,7 +311,7 @@ namespace Fritz.WebFormsTest
       Type outType;
 
       // Blacklist assembly name prefixes
-      var blacklist = new string[] { "Microsoft.", "System.", "mscorlib", "xunit." };
+      var blacklist = new string[] { "Microsoft.", "System", "mscorlib", "xunit." };
 
       var assembliesToScan = AppDomain.CurrentDomain.GetAssemblies().Where(a => !blacklist.Any(b => a.FullName.StartsWith(b))).ToArray();
       var theAssembly = assembliesToScan.FirstOrDefault(a =>

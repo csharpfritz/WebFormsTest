@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -24,17 +25,19 @@ namespace Fritz.WebFormsTest
     private string _TargetFolder;
     private bool _SkipCrawl = false;
     private bool Initialized = false;
+    private bool _SkipPrecompile = true;
 
 
     /// <summary>
     /// Create a proxy for the web application to be inspected
     /// </summary>
     /// <param name="rootFolder">Physical location on disk of the web application source code</param>
-    private WebApplicationProxy(string rootFolder, bool skipCrawl)
+    private WebApplicationProxy(string rootFolder, bool skipCrawl, bool skipPrecompile)
     {
 
       WebRootFolder = rootFolder;
       _SkipCrawl = skipCrawl;
+      _SkipPrecompile = skipPrecompile;
 
     }
 
@@ -43,9 +46,9 @@ namespace Fritz.WebFormsTest
       Dispose(false);
     }
 
-    public static void Create(string rootFolder, bool skipCrawl = true)
+    public static void Create(string rootFolder, bool skipCrawl = true, bool skipPrecompile = true)
     {
-      _Instance = new WebApplicationProxy(rootFolder, skipCrawl);
+      _Instance = new WebApplicationProxy(rootFolder, skipCrawl, skipPrecompile);
 
       InjectTestValuesIntoHttpRuntime();
       SubstituteDummyHttpContext();
@@ -72,10 +75,17 @@ namespace Fritz.WebFormsTest
       // Can this go async?
       _compiler = new ClientBuildManager(@"/",
         WebRootFolder,
-        _TargetFolder,
-        new ClientBuildManagerParameter() { PrecompilationFlags = PrecompilationFlags.ForceDebug });
-      _compiler.PrecompileApplication();
+        null,
+        new ClientBuildManagerParameter() {
+          //PrecompilationFlags = PrecompilationFlags.Updatable
+          //PrecompilationFlags.OverwriteTarget
+        });
 
+      // In larger suites, this may be more cost effective to run
+      if (!_SkipPrecompile)
+      {
+        _compiler.PrecompileApplication();
+      }
 
       // Async?
       CrawlWebApplication();

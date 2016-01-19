@@ -3,6 +3,7 @@ using Fritz.WebFormsTest.Test;
 using Fritz.WebFormsTest.Web;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ using System.Web.Routing;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Fritz.WebFormsInspect.Test
+namespace Fritz.WebFormsTest.Test
 {
   [Collection("Precompiler collection")]
   public class WebApplicationProxyFixture : BaseFixture

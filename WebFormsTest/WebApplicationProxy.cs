@@ -142,9 +142,6 @@ namespace Fritz.WebFormsTest
 
     }
 
-    [Obsolete("Now initializing during Create")]
-    public static void Initialize() {  }
-
     /// <summary>
     /// Check if the Proxy is running
     /// </summary>

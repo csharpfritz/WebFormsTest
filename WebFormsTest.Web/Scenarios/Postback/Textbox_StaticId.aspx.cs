@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 
 namespace Fritz.WebFormsTest.Web.Scenarios.Postback
 {
-  public partial class Textbox_StaticId : TestablePage
+  public partial class Textbox_StaticId : Page
   {
     protected void Page_Load(object sender, EventArgs e)
     {

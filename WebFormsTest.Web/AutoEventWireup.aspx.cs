@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 
 namespace Fritz.WebFormsTest.Web
 {
-  public partial class AutoEventWireup : TestablePage
+  public partial class AutoEventWireup : Page
   {
 
     public const string LOAD_INDICATOR = "<!-- Page Loaded -->";
@@ -16,7 +16,8 @@ namespace Fritz.WebFormsTest.Web
     {
 
       // Write content to prove that the Load event triggered
-      Response.Write(LOAD_INDICATOR);
+      Controls.Add(new LiteralControl(LOAD_INDICATOR));
+      // Response.Write(LOAD_INDICATOR);
 
     }
 

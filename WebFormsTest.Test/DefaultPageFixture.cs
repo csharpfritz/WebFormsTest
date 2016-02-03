@@ -38,70 +38,11 @@ namespace Fritz.WebFormsTest.Test
     }
 
     [Fact]
-    public void BasePageFormHandled()
-    {
-
-      // Arrange
-      var fakeForm = new NameValueCollection();
-      fakeForm.Add("test", "item");
-      request.SetupGet(r => r.Form).Returns(fakeForm);
-
-      // Act
-      var sut = new _Default()
-      {
-        Context = context.Object
-      };
-      sut.FireEvent(TestablePage.WebFormEvent.Load, new EventArgs());
-
-      // Assert
-      response.Verify(r => r.Write("item"), "Did not write the content of the Form");
-
-
-    }
-
-    [Fact]
-    public void BasePageIndicatesResponse()
-    {
-
-      // Arrange
-
-      // Act
-      var sut = new _Default()
-      {
-        Context = context.Object
-      };
-      sut.FireEvent(TestablePage.WebFormEvent.PreRender, new EventArgs());
-      var results = sut.RenderHtml();
-
-      // Assert
-      Assert.Contains(TestablePage.COMMENT_MARKER, results);
-
-    }
-
-    [Fact]
-    public void VerifyOnLoadWasCalled()
-    {
-
-      // Arrange 
-
-      // Act
-      var sut = new _Default
-      {
-        Context = context.Object
-      };
-      sut.FireEvent(TestablePage.WebFormEvent.Load, new EventArgs());
-
-      // Assert
-      response.Verify(r => r.Write(_Default.LOAD_INDICATOR));
-
-    }
-
-    [Fact]
     public void VerifyIsInTestModeIsSetInHttpContextCurrent()
     {
 
       // Arrange
-      WebApplicationProxy.SubstituteDummyHttpContext();
+      WebApplicationProxy.SubstituteDummyHttpContext("/");
 
       // Act
       HttpContext testContext = HttpContext.Current;

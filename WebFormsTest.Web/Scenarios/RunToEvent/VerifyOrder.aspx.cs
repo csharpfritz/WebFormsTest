@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 
 namespace Fritz.WebFormsTest.Web.Scenarios.RunToEvent
 {
-  public partial class VerifyOrder : TestablePage
+  public partial class VerifyOrder : Page
   {
 
     protected override void OnInit(EventArgs e)

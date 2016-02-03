@@ -28,10 +28,10 @@ namespace Fritz.WebFormsTest.Test
       // Arrange
 
       // Act
-      var sut = WebApplicationProxy.GetPageByLocation<Buttons_AutoId>("/Scenarios/ControlTree/Buttons_AutoId.aspx", context.Object);
+      var sut = WebApplicationProxy.GetPageByLocation<Buttons_AutoId>("/Scenarios/ControlTree/Buttons_AutoId.aspx");
 
       // Run to PreRender, the buttons are in a FormView that is databound in Load
-      sut.RunToEvent(TestablePage.WebFormEvent.PreRender);
+      sut.RunToEvent(WebFormEvent.PreRender);
 
       // Assert
       Assert.NotEqual("buttonA", sut.ButtonA.ClientID);

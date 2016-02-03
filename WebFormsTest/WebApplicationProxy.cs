@@ -32,8 +32,6 @@ namespace Fritz.WebFormsTest
     private bool _SkipPrecompile = true;
     private static HostingEnvironmentWrapper _hostingEnvironment;
 
-
-
     /// <summary>
     /// Create a proxy for the web application to be inspected
     /// </summary>
@@ -80,8 +78,6 @@ namespace Fritz.WebFormsTest
         null,
         new ClientBuildManagerParameter()
         {
-          //PrecompilationFlags = PrecompilationFlags.Updatable
-          //PrecompilationFlags.OverwriteTarget
         });
 
       SetHttpRuntimeAppDomainAppPath();

@@ -13,6 +13,7 @@ using System.Web.Caching;
 using System.Web.Compilation;
 using System.Web.Configuration;
 using System.Web.Hosting;
+using System.Web.SessionState;
 using System.Web.UI;
 
 namespace Fritz.WebFormsTest
@@ -31,6 +32,9 @@ namespace Fritz.WebFormsTest
     private bool Initialized = false;
     private bool _SkipPrecompile = true;
     private static HostingEnvironmentWrapper _hostingEnvironment;
+
+    // Identical to SessionStateUtility.SESSION_KEY
+    private const String SESSION_KEY = "AspSession";
 
     /// <summary>
     /// Create a proxy for the web application to be inspected
@@ -265,6 +269,34 @@ namespace Fritz.WebFormsTest
     public static string WebRootFolder
     {
       get; private set;
+    }
+
+    /// <summary>
+    /// Gets a new session and associates it with HttpContext.Current
+    /// </summary>
+    /// <returns></returns>
+    public static HttpSessionState GetNewSession(Dictionary<string, object> initialItems = null)
+    {
+
+      var sessionId = Guid.NewGuid().ToString();
+      var sessionContainer = new TestHttpSessionStateContainer(sessionId);
+
+      var ctor = typeof(HttpSessionState).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, new Type[] { typeof(IHttpSessionState) }, null);
+      var newSession = ctor.Invoke(new object[] { sessionContainer }) as HttpSessionState;
+
+      if (initialItems != null)
+      {
+        foreach (var item in initialItems)
+        {
+          newSession.Add(item.Key, item.Value);
+        }
+      }
+
+      HttpContext.Current.Items.Add(SESSION_KEY, newSession);
+
+      return newSession;
+
+
     }
 
     public static void DisposeIt()

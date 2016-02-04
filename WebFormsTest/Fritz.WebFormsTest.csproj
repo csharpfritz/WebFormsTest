@@ -55,6 +55,7 @@
     <Compile Include="Internal\HostingEnvironmentWrapper.cs" />
     <Compile Include="Internal\InternalPageExtensions.cs" />
     <Compile Include="Internal\TestConfigMapPath.cs" />
+    <Compile Include="Internal\TestHttpSessionStateContainer.cs" />
     <Compile Include="Internal\TestVirtualDirectory.cs" />
     <Compile Include="Internal\TestVirtualFile.cs" />
     <Compile Include="Internal\TestVirtualPathProvider.cs" />

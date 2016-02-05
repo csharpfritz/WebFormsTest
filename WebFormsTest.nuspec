@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>WebFormsTest</id>
-    <version>0.5.2</version>
+    <version>1.0.0</version>
     <title>WebFormsTest</title>
     <authors>Jeffrey T. Fritz</authors>
     <owners>csharpfritz</owners>
@@ -15,7 +15,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Unit Test Harness for ASP.NET Web Forms objects</description>
     <summary>Unit test harness to assist in testing code-behind files in ASP.NET Web Forms projects</summary>
-    <releaseNotes>v0.5.2 - Simplified WebApplicationProxy creation and GetPage process</releaseNotes>
+    <releaseNotes>v1.0.0 - Introduced Cache support on WebApplicationProxy and Control.FireEvent to trigger events on Controls</releaseNotes>
     <copyright>Copyright 2016 Jeffrey T. Fritz</copyright>
     <tags>asp.net test unittest</tags>
   </metadata>

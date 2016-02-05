@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 
 namespace Fritz.WebFormsTest.Web.Scenarios.ControlTree
 {
-  public partial class PageWithUserControl : TestablePage
+  public partial class PageWithUserControl : Page
   {
     protected void Page_Load(object sender, EventArgs e)
     {

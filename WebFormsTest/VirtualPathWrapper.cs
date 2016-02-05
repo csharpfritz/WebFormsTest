@@ -47,7 +47,7 @@ namespace Fritz.WebFormsTest
     public static VirtualPathWrapper CreateAbsolute(string path)
     {
 
-      var mi = VirtualPathType.GetMethod("CreateAbsolute", new[] { typeof(string) });
+      var mi = VirtualPathType.GetMethod("CreateAbsoluteAllowNull", new[] { typeof(string) });
 
       return new VirtualPathWrapper()
       {

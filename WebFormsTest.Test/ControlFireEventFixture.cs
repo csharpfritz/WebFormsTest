@@ -19,10 +19,10 @@ namespace Fritz.WebFormsTest.Test
     {
 
       // Arrange
-      var page = WebApplicationProxy.GetPageByLocation<Buttons_AutoId>("/Scenarios/ControlTree/Buttons_AutoId.aspx", context.Object);
+      var page = WebApplicationProxy.GetPageByLocation<Buttons_AutoId>("/Scenarios/ControlTree/Buttons_AutoId.aspx");
 
       // Run to PreRender, the buttons are in a FormView that is databound in Load
-      page.RunToEvent(TestablePage.WebFormEvent.PreRender);
+      page.RunToEvent(WebFormEvent.PreRender);
 
       // Act
       var sut = page.ButtonA;
@@ -38,10 +38,10 @@ namespace Fritz.WebFormsTest.Test
     {
 
       // Arrange
-      var page = WebApplicationProxy.GetPageByLocation<Buttons_AutoId>("/Scenarios/ControlTree/Buttons_AutoId.aspx", context.Object);
+      var page = WebApplicationProxy.GetPageByLocation<Buttons_AutoId>("/Scenarios/ControlTree/Buttons_AutoId.aspx");
 
       // Run to PreRender, the buttons are in a FormView that is databound in Load
-      page.RunToEvent(TestablePage.WebFormEvent.PreRender);
+      page.RunToEvent(WebFormEvent.PreRender);
 
       // Act
       var sut = page.ButtonA;

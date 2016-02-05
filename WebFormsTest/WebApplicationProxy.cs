@@ -204,6 +204,8 @@ namespace Fritz.WebFormsTest
       // Prepare the page for testing
       if (outObj is Page) ((Page)outObj).PrepareForTest();
 
+      CompleteHttpContext(HttpContext.Current);
+
       return outObj;
 
 
@@ -292,8 +294,6 @@ namespace Fritz.WebFormsTest
         }
       }
 
-      HttpContext.Current.Items.Add(SESSION_KEY, newSession);
-
       return newSession;
 
 
@@ -367,6 +367,15 @@ namespace Fritz.WebFormsTest
 
       return caps;
 
+
+    }
+
+    private static void CompleteHttpContext(HttpContext ctx)
+    {
+
+      // Socket State
+      ctx.GetType().GetProperty("WebSocketTransitionState", BindingFlags.NonPublic | BindingFlags.Instance)
+        .SetValue(ctx, (byte)2, null);
 
     }
 

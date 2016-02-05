@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.UI;
 using Xunit;
 
 namespace Fritz.WebFormsTest.Test
@@ -21,12 +22,26 @@ namespace Fritz.WebFormsTest.Test
       // Arrange
 
       // Act
-      WebApplicationProxy.GetPageByLocation("/default.aspx");
       var sut = WebApplicationProxy.GetNewSession();
 
       // Assert
-      Assert.NotNull(HttpContext.Current.Session);
-      Assert.False(string.IsNullOrEmpty(HttpContext.Current.Session.SessionID));
+      Assert.False(string.IsNullOrEmpty(sut.SessionID));
+
+    }
+
+    [Fact]
+    public void SessionOnPageMatchesHttpContextCurrent()
+    {
+
+      // Arrange
+
+      // Act
+      var sut = WebApplicationProxy.GetNewSession();
+      var thePage = WebApplicationProxy.GetPageByLocation("/default.aspx", ctx => ctx.AddSession(sut)) as Page;
+
+      // Assert
+      Assert.Same(sut, thePage.Session);
+      Assert.NotNull(HttpContext.Current);
 
     }
 

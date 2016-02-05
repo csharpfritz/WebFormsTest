@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ControlExtensions.cs" />
+    <Compile Include="HttpContextExtensions.cs" />
     <Compile Include="Internal\BuildManagerWrapper.cs" />
     <Compile Include="Internal\HostingEnvironmentWrapper.cs" />
     <Compile Include="Internal\InternalPageExtensions.cs" />

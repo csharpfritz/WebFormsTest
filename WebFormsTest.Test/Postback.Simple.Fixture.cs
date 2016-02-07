@@ -33,8 +33,8 @@ namespace Fritz.WebFormsTest.Test
       // Arrange
 
       // Act
-      var sut = WebApplicationProxy.GetPageByLocation<Textbox_StaticId>("/Scenarios/Postback/Textbox_StaticId.aspx", context.Object);
-      sut.FireEvent(TestablePage.WebFormEvent.Init, EventArgs.Empty);
+      var sut = WebApplicationProxy.GetPageByLocation<Textbox_StaticId>("/Scenarios/Postback/Textbox_StaticId.aspx");
+      sut.FireEvent(WebFormEvent.Init, EventArgs.Empty);
 
       // Assert
       Assert.NotEqual(0, sut.Controls.Count);
@@ -55,9 +55,8 @@ namespace Fritz.WebFormsTest.Test
 
       // Act
       var sut = WebApplicationProxy.GetPageByLocation<Textbox_StaticId>("/Scenarios/Postback/Textbox_StaticId.aspx");
-      sut.Context = context.Object;
       sut.MockPostData(postData);
-      sut.RunToEvent(TestablePage.WebFormEvent.PreRender);
+      sut.RunToEvent(WebFormEvent.PreRender);
 
       // Assert
       Assert.True(sut.IsPostBack, "Page 'IsPostBack' is not set to true");
@@ -75,9 +74,8 @@ namespace Fritz.WebFormsTest.Test
 
       // Act
       var sut = WebApplicationProxy.GetPageByLocation<Textbox_StaticId>("/Scenarios/Postback/Textbox_StaticId.aspx");
-      sut.Context = context.Object;
       sut.MockPostData(postData);
-      sut.RunToEvent(TestablePage.WebFormEvent.PreRender);
+      sut.RunToEvent(WebFormEvent.PreRender);
 
       // Assert
       Assert.Equal(NEW_TEXT, sut.TestControl.Text);

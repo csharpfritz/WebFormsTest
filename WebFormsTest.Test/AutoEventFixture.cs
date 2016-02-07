@@ -50,11 +50,13 @@ namespace Fritz.WebFormsTest.Test
       // Arrange
 
       // Act
-      var sut = WebApplicationProxy.GetPageByLocation<AutoEventWireup>("/AutoEventWireup.aspx", context.Object);
-      sut.FireEvent(WebFormsTest.TestablePage.WebFormEvent.Load, new EventArgs());
+      var sut = WebApplicationProxy.GetPageByLocation<AutoEventWireup>("/AutoEventWireup.aspx");
+      sut.FireEvent(WebFormEvent.Init);
+      sut.FireEvent(WebFormEvent.Load);
 
       // Assert
-      response.Verify(r => r.Write(AutoEventWireup.LOAD_INDICATOR), "Load event was not triggered by AutoEventWireup");
+      var responseText = sut.RenderHtml();
+      Assert.Contains(AutoEventWireup.LOAD_INDICATOR, responseText);
 
     }
 

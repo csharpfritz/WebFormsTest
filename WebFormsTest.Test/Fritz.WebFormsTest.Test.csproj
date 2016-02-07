@@ -106,6 +106,7 @@
     <Compile Include="RehydrateMasterPageFixture.cs" />
     <Compile Include="RehydrateUserControlFixture.cs" />
     <Compile Include="RunToEventFixture.cs" />
+    <Compile Include="SessionFixture.cs" />
     <Compile Include="SetPageStateFixture.cs" />
     <Compile Include="WebApplicationProxyFixture.cs" />
   </ItemGroup>

@@ -30,7 +30,6 @@ namespace Fritz.WebFormsTest.Test
 
       // Act
       var sut = WebApplicationProxy.GetPageByLocation<Web.Scenarios.RunToEvent.VerifyOrder>("/Scenarios/RunToEvent/VerifyOrder.aspx");
-      sut.Context = context.Object;
       sut.RunToEvent();
 
       // Assert
@@ -52,19 +51,18 @@ namespace Fritz.WebFormsTest.Test
 
       // Act
       var sut = WebApplicationProxy.GetPageByLocation<Web.Scenarios.RunToEvent.VerifyOrder>("/Scenarios/RunToEvent/VerifyOrder.aspx");
-      sut.Context = context.Object;
-      sut.FireEvent(TestablePage.WebFormEvent.Init);
+      sut.FireEvent(WebFormEvent.Init);
 
       // Assert
-      Assert.Throws<InvalidOperationException>(() => sut.FireEvent(TestablePage.WebFormEvent.Init));
+      Assert.Throws<InvalidOperationException>(() => sut.FireEvent(WebFormEvent.Init));
 
     }
     
     [Theory]
-    [InlineData(TestablePage.WebFormEvent.Init)]
-    [InlineData(TestablePage.WebFormEvent.Load)]
-    [InlineData(TestablePage.WebFormEvent.PreRender)]
-    public void StopAtCorrectEvent(TestablePage.WebFormEvent evt)
+    [InlineData(WebFormEvent.Init)]
+    [InlineData(WebFormEvent.Load)]
+    [InlineData(WebFormEvent.PreRender)]
+    public void StopAtCorrectEvent(WebFormEvent evt)
     {
 
       // Arrange
@@ -72,7 +70,6 @@ namespace Fritz.WebFormsTest.Test
 
       // Act
       var sut = WebApplicationProxy.GetPageByLocation<Web.Scenarios.RunToEvent.VerifyOrder>("/Scenarios/RunToEvent/VerifyOrder.aspx");
-      sut.Context = context.Object;
       sut.RunToEvent(evt);
 
       // Assert

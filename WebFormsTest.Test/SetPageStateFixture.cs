@@ -20,7 +20,6 @@ namespace Fritz.WebFormsTest.Test
 
       // Arrange
       var sut = WebApplicationProxy.GetPageByLocation<Textbox_StaticId>("/Scenarios/Postback/Textbox_StaticId.aspx");
-      sut.Context = context.Object;
 
       var EXPECTED = "Configured Text";
 

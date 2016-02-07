@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Fritz.WebFormsTest.Internal;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,6 +11,10 @@ using System.Text;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Compilation;
+using System.Web.Configuration;
+using System.Web.Hosting;
+using System.Web.SessionState;
+using System.Web.UI;
 
 namespace Fritz.WebFormsTest
 {
@@ -22,11 +28,13 @@ namespace Fritz.WebFormsTest
     private static WebApplicationProxy _Instance;
     private readonly Dictionary<Type, string> _LocationTypeMap = new Dictionary<Type, string>();
     private ClientBuildManager _compiler;
-    private string _TargetFolder;
     private bool _SkipCrawl = false;
     private bool Initialized = false;
     private bool _SkipPrecompile = true;
+    private static HostingEnvironmentWrapper _hostingEnvironment;
 
+    // Identical to SessionStateUtility.SESSION_KEY
+    private const String SESSION_KEY = "AspSession";
 
     /// <summary>
     /// Create a proxy for the web application to be inspected
@@ -51,16 +59,14 @@ namespace Fritz.WebFormsTest
       _Instance = new WebApplicationProxy(rootFolder, skipCrawl, skipPrecompile);
 
       InjectTestValuesIntoHttpRuntime();
-      SubstituteDummyHttpContext();
+
+      _hostingEnvironment = new HostingEnvironmentWrapper();
+
+      SubstituteDummyHttpContext("/");
 
       _Instance.InitializeInternal();
 
     }
-
-    /// <summary>
-    /// The folder that the Web Application resides in
-    /// </summary>
-    public static string WebApplicationRootFolder {  get { return _Instance._TargetFolder; } }
 
     /// <summary>
     /// Inspect the application and create mappings for all types
@@ -70,16 +76,15 @@ namespace Fritz.WebFormsTest
 
       if (Initialized) return;
 
-      _TargetFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-
       // Can this go async?
       _compiler = new ClientBuildManager(@"/",
         WebRootFolder,
         null,
-        new ClientBuildManagerParameter() {
-          //PrecompilationFlags = PrecompilationFlags.Updatable
-          //PrecompilationFlags.OverwriteTarget
+        new ClientBuildManagerParameter()
+        {
         });
+
+      SetHttpRuntimeAppDomainAppPath();
 
       // In larger suites, this may be more cost effective to run
       if (!_SkipPrecompile)
@@ -87,19 +92,55 @@ namespace Fritz.WebFormsTest
         _compiler.PrecompileApplication();
       }
 
+      ConfigureBuildManager();
+
       // Async?
       CrawlWebApplication();
 
-      Type appType = GetHttpApplicationType();
-      WebApplicationProxy.Application = Activator.CreateInstance(appType) as HttpApplication;
-      TriggerApplicationStart(WebApplicationProxy.Application);
+      CreateHttpApplication();
 
       Initialized = true;
 
     }
 
-    [Obsolete("Now initializing during Create")]
-    public static void Initialize() {  }
+    /// <summary>
+    /// Force the BuildManager into a state where it thinks we are on a WebHost and already precompiled
+    /// </summary>
+    private void ConfigureBuildManager()
+    {
+
+      var fld = typeof(BuildManager).GetProperty("PreStartInitStage", BindingFlags.Static | BindingFlags.NonPublic);
+      var psiEnumValues = typeof(BuildManager).Assembly.GetType("System.Web.Compilation.PreStartInitStage").GetEnumValues();
+      fld.SetValue(null, psiEnumValues.GetValue(2), null);
+
+      // Skip Top Level Exceptions, just like we would in precompilation
+      var skip = typeof(BuildManager).GetProperty("SkipTopLevelCompilationExceptions", BindingFlags.Static | BindingFlags.NonPublic);
+      skip.SetValue(null, true, null);
+
+      // RegularAppRuntimeModeInitialize
+      BuildManagerWrapper.RegularAppRuntimeModeInitialize();
+
+    }
+
+    private void SetHttpRuntimeAppDomainAppPath()
+    {
+      var p = typeof(HttpRuntime).GetField("_appDomainAppPath", BindingFlags.NonPublic | BindingFlags.Instance);
+      p.SetValue(HttpRuntimeInstance, WebApplicationProxy.WebPrecompiledFolder);
+
+      //var getAppDomainMethod = typeof(HttpRuntime).GetMethod("GetAppDomainString", BindingFlags.NonPublic | BindingFlags.Static);
+      //var appId = getAppDomainMethod.Invoke(null, new object[] { ".appId" });
+      var appId = _compiler.GetType().GetField("_appId", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_compiler);
+
+      p = typeof(HttpRuntime).GetField("_appDomainAppId", BindingFlags.NonPublic | BindingFlags.Instance);
+      p.SetValue(HttpRuntimeInstance, appId);
+
+      p = typeof(HttpRuntime).GetField("_codegenDir", BindingFlags.NonPublic | BindingFlags.Instance);
+      p.SetValue(HttpRuntimeInstance, _compiler.CodeGenDir);
+
+      p = typeof(HttpRuntime).GetField("_DefaultPhysicalPathOnMapPathFailure", BindingFlags.NonPublic | BindingFlags.Static);
+      p.SetValue(null, WebApplicationProxy.WebRootFolder);
+
+    }
 
     /// <summary>
     /// Check if the Proxy is running
@@ -112,12 +153,18 @@ namespace Fritz.WebFormsTest
     private static void InjectTestValuesIntoHttpRuntime()
     {
 
-      var getRunTime = typeof(HttpRuntime).GetField("_theRuntime", BindingFlags.NonPublic | BindingFlags.Static);
-      var theRunTime = getRunTime.GetValue(null) as HttpRuntime;
-
       var p = typeof(HttpRuntime).GetField("_appDomainAppVPath", BindingFlags.NonPublic | BindingFlags.Instance);
-      p.SetValue(theRunTime, VirtualPathWrapper.Create("/").VirtualPath);
+      p.SetValue(HttpRuntimeInstance, VirtualPathWrapper.Create("/").VirtualPath);
 
+    }
+
+    private static HttpRuntime HttpRuntimeInstance
+    {
+      get
+      {
+        var getRunTime = typeof(HttpRuntime).GetField("_theRuntime", BindingFlags.NonPublic | BindingFlags.Static);
+        return getRunTime.GetValue(null) as HttpRuntime;
+      }
     }
 
     /// <summary>
@@ -139,24 +186,25 @@ namespace Fritz.WebFormsTest
     /// </summary>
     /// <param name="location">The web absolute folder location to retrive the Page from</param>
     /// <returns>The Page object from the specified location</returns>
-    public static object GetPageByLocation(string location, HttpContextBase context = null)
+    public static object GetPageByLocation(string location, Action<HttpContext> contextModifiers = null)
     {
 
       if (_Instance == null || !_Instance.Initialized) throw new InvalidOperationException("The WebApplicationProxy has not been created and initialized properly");
 
       var returnType = _Instance._compiler.GetCompiledType(location);
-      SubstituteDummyHttpContext();
+      SubstituteDummyHttpContext(location);
+
+      if (contextModifiers != null) contextModifiers(HttpContext.Current);
 
       dynamic outObj = Activator.CreateInstance(returnType);
 
-      if (context != null)
-      {
-        var pi = outObj.GetType().GetProperty("Context");
-        pi.SetValue(outObj, context, null);
-      }
+      // TODO: This will change to set HttpContext.Current which should trickle down to the Page object
+
 
       // Prepare the page for testing
-      if (outObj is TestablePage) outObj.PrepareForTest();
+      if (outObj is Page) ((Page)outObj).PrepareForTest();
+
+      CompleteHttpContext(HttpContext.Current);
 
       return outObj;
 
@@ -169,14 +217,14 @@ namespace Fritz.WebFormsTest
     /// <typeparam name="T">The type of the Page to fetch</typeparam>
     /// <param name="location">The web absolute folder location to retrive the Page from</param>
     /// <returns>A strongly-typed Page object from the specified location</returns>
-    public static T GetPageByLocation<T>(string location, HttpContextBase context = null) where T : TestablePage
+    public static T GetPageByLocation<T>(string location, Action<HttpContext> contextModifiers = null) where T : Page
     {
 
-      return GetPageByLocation(location, context) as T;
+      return GetPageByLocation(location, contextModifiers) as T;
 
     }
 
-    public static T GetPageByType<T>() where T : TestablePage
+    public static T GetPageByType<T>() where T : Page
     {
 
       if (_Instance._SkipCrawl) throw new InvalidOperationException("Unable to fetch by type because the project has not been indexed");
@@ -198,6 +246,9 @@ namespace Fritz.WebFormsTest
 
     }
 
+    /// <summary>
+    /// This is the application object created typically by the "global.asax.cs" class
+    /// </summary>
     public static HttpApplication Application
     {
       get; private set;
@@ -208,15 +259,44 @@ namespace Fritz.WebFormsTest
       get
       {
 
-        if (HttpContext.Current == null) SubstituteDummyHttpContext();
+        // if (HttpContext.Current == null) SubstituteDummyHttpContext();
         return HttpContext.Current.Cache;
 
       }
     }
 
+    /// <summary>
+    /// The physical location of the web application on disk.  c:\dev\MyWebApp
+    /// </summary>
     public static string WebRootFolder
     {
       get; private set;
+    }
+
+    /// <summary>
+    /// Gets a new session and associates it with HttpContext.Current
+    /// </summary>
+    /// <returns></returns>
+    public static HttpSessionState GetNewSession(Dictionary<string, object> initialItems = null)
+    {
+
+      var sessionId = Guid.NewGuid().ToString();
+      var sessionContainer = new TestHttpSessionStateContainer(sessionId);
+
+      var ctor = typeof(HttpSessionState).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, new Type[] { typeof(IHttpSessionState) }, null);
+      var newSession = ctor.Invoke(new object[] { sessionContainer }) as HttpSessionState;
+
+      if (initialItems != null)
+      {
+        foreach (var item in initialItems)
+        {
+          newSession.Add(item.Key, item.Value);
+        }
+      }
+
+      return newSession;
+
+
     }
 
     public static void DisposeIt()
@@ -236,7 +316,7 @@ namespace Fritz.WebFormsTest
 
       // Clean up the target folder
       try {
-        Directory.Delete(WebApplicationRootFolder, true);
+        // Directory.Delete(WebApplicationRootFolder, true);
       } catch (DirectoryNotFoundException)
       {
         // Its ok...  its already gone!
@@ -246,61 +326,62 @@ namespace Fritz.WebFormsTest
     /// <summary>
     /// Swap in a dummy HttpContext for HttpContext.Current, valid for current thread only
     /// </summary>
-    internal static void SubstituteDummyHttpContext()
+    internal static void SubstituteDummyHttpContext(string location)
     {
 
-      HttpContext.Current = GetDummyContext("/");
+      HttpContext.Current = GetTestContext(location);
 
     }
 
-    /// <summary>
-    /// Get a simple and DUMB HttpContext suitable for replacing HttpContext.Current for a page requested at <paramref name="path"/>
-    /// </summary>
-    /// <param name="path">The location of the request to fake</param>
-    /// <returns></returns>
-    internal static HttpContext GetDummyContext(string path)
+    private static HttpContext GetTestContext(string location)
     {
 
-      var request = GetSimpleHttpRequest(path);
+      var workerRequest = new TestHttpWorkerRequest(location);
+      var testContext = new HttpContext(workerRequest);
 
-      var sw = new StringWriter();
-      var response = new HttpResponse(sw);
+      // BrowserCapabilities
+      HttpBrowserCapabilities caps = GetBrowserCaps();
+      typeof(HttpRequest).GetField("_browsercaps", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(testContext.Request, caps);
 
-      var myContext = new HttpContext(request, response);
-      myContext.Items["IsInTestMode"] = true;
+      testContext.Items["IsInTestMode"] = true;
 
-      return myContext;
+      return testContext;
 
     }
 
-    /// <summary>
-    /// Create a simple HttpRequest to the location specified in <paramref name="path"/>
-    /// </summary>
-    /// <param name="path">Location requested</param>
-    /// <returns></returns>
-    internal static HttpRequest GetSimpleHttpRequest(string path)
+    private static HttpBrowserCapabilities GetBrowserCaps()
     {
 
-      var ctor = typeof(HttpRequest).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { VirtualPathWrapper.VirtualPathType, typeof(String) }, null);
+      var caps = new HttpBrowserCapabilities();
 
-      return ctor.Invoke(new object[] { VirtualPathWrapper.Create(path).VirtualPath, string.Empty }) as HttpRequest;
+      IDictionary items = new Dictionary<string, object>();
+      items.Add("cookies", "false");
+      items.Add("ecmascriptversion", "3.0.0"); // Everyone has 5 for now...
+      items.Add("preferredRenderingMime", "text/html");
+      items.Add("preferredRequestEncoding", "UTF-8");
+      items.Add("preferredResponseEncoding", "UTF-8");
+      items.Add("requiresXhtmlCssSuppression", "false");
+      items.Add("w3cdomversion", "1.0.0");
+
+      typeof(HttpCapabilitiesBase).GetField("_items", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(caps, items);
+
+      return caps;
+
 
     }
 
-    private static VirtualPathWrapper _BaseVirtualPath;
-    /// <summary>
-    /// A VirtualPath reference to the root of the application
-    /// </summary>
-    internal static VirtualPathWrapper BaseVirtualPath
+    private static void CompleteHttpContext(HttpContext ctx)
     {
-      get
-      {
-        if (_BaseVirtualPath == null)
-        {
-          _BaseVirtualPath = VirtualPathWrapper.CreateAbsolute(WebRootFolder);
-        }
-        return _BaseVirtualPath;
-      }
+
+      // Socket State
+      ctx.GetType().GetProperty("WebSocketTransitionState", BindingFlags.NonPublic | BindingFlags.Instance)
+        .SetValue(ctx, (byte)2, null);
+
+    }
+
+    public static string WebPrecompiledFolder
+    {
+      get { return _Instance._compiler.CodeGenDir; }
     }
 
     #region Private Methods
@@ -346,10 +427,34 @@ namespace Fritz.WebFormsTest
 
     }
 
+    private static void CreateHttpApplication()
+    {
+
+      // Create the Global / HttpApplication object
+      Type appType = GetHttpApplicationType();
+      WebApplicationProxy.Application = Activator.CreateInstance(appType) as HttpApplication;
+
+      // Create the HttpApplicationState
+      Type asType = typeof(HttpApplicationState);
+      var appState = asType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { }, null)
+        .Invoke(new object[] { }) as HttpApplicationState;
+
+      // Inject the application state
+      var theField = typeof(HttpApplication).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
+      theField.SetValue(WebApplicationProxy.Application, appState);
+
+      TriggerApplicationStart(WebApplicationProxy.Application);
+
+
+
+    }
+
+
+
     #endregion
 
   }
 
-   
+
 
 }

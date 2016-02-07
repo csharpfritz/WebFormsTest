@@ -17,15 +17,12 @@ OR...  you could install the WebFormsTest harness from NuGet with the following 
 
 The biggest barrier to unit-testing ASP.NET webforms applications is the inability to mock the basic interactions with a Page object.  The ASP.NET pipeline is configured and loaded through the web startup, HttpModules and handlers for the ASPX page object.  Additionally, since we cannot mock the base HttpContext object you have no way to emulate interactions that a user would take with your pages.
 
+WebFormsTest attempts to mimic a 'real webserver' by providing a harness that acts like a webserver and provides all of the features to the ASP.NET framework that are expected.  In this way, you are able to test your code with the real ASP.NET framework objects: Context, Session, Application, Request, Response.  There is no faking, no stubbing, no inheriting and working around sealed classes.  You can work directly with your code-behind classes and even the contents of your ASPX / ASCX pages.  Controls and their behavior are completed supported, and you can even inspect the rendered output of pages in the application. 
+
+All code written in the project uses reflection and considers the publicly accessible source code to System.Web on referencesource.microsoft.com
+
 ## How to use it
 
-The interactions with Page objects are tested in the following way:
+The start building tests, you need to consider that you are 'configuring a web server' and need to tell it some things about your application.  With this harness, we use a WebApplicationProxy object that will proxy "requests for features" to the application and deliver those results to you.  Configure one WebApplicationProxy per suite of tests, and being requesting pages through it and enjoy testing your code without needing a server or a running service.
 
-1.	Modify your web project's pages that you want to test so that they descend from `WebFormsTest.TestablePage`
-1.	Construct a mock `System.Web.HttpContextBase` and set the `Context` property.  The contents of the Context will flow into the `Response`, `Request`, and `Session` properties of the `TestablePage`
-1.	Trigger any events that you want to inspect by calling the `TestablePage.FireEvent` method
-1.	Inspect the rendered HTML from the page by calling the `RenderHTML` method and inspecting the string of HTML that it returns.
-
-This should get you started with some simple testing of interactions in your Page events.
-	 
-Maybe you need to inspect more complex interactions in your event handler methods and the controls on the page.  Use the WebApplicationProxy object to precompile your application and load the complete runtime version of your pages, including all controls and master pages, for testing.
+Take a look at our GitHub Wiki to learn more abourt building your first test and some of the more complex interactions that you can take.  We also list the operations that are currently supported.  Your contributions and feedback are very welcome as we build more features and support more test capabilities with this harness.

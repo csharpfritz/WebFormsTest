@@ -147,6 +147,12 @@ namespace Fritz.WebFormsTest
     }
 
 
+    public static T FindControl<T>(this Page myPage, string controlId) where T : Control {
+
+      return myPage.FindControl(controlId) as T;
+      
+    }
+
 
   }
 

@@ -54,7 +54,14 @@ namespace Fritz.WebFormsTest
       Dispose(false);
     }
 
-    public static void Create(string rootFolder, bool skipCrawl = true, bool skipPrecompile = true)
+
+    public static void Create(Type sampleWebType, WebApplicationProxyOptions options = null)
+    {
+
+    }
+
+
+    private static void Create(string rootFolder, bool skipCrawl = true, bool skipPrecompile = true)
     {
       _Instance = new WebApplicationProxy(rootFolder, skipCrawl, skipPrecompile);
 

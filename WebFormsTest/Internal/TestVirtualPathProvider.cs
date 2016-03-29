@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Web;
 using System.Web.Hosting;
 
 namespace Fritz.WebFormsTest.Internal
@@ -26,17 +29,31 @@ namespace Fritz.WebFormsTest.Internal
     public override bool DirectoryExists(string virtualDir)
     {
       var realFolder = virtualDir.Replace("~/", "").Replace('/','\\');
-      var physicalFolder = Path.Combine(WebApplicationProxy.WebPrecompiledFolder, realFolder);
+      var physicalFolder = Path.Combine(RootFolder, realFolder);
       return new DirectoryInfo(physicalFolder).Exists;
     }
 
     public override bool FileExists(string virtualPath)
     {
+      string thisPath = ReformatPath(virtualPath);
 
-      virtualPath = virtualPath.Replace("~/", "/").Substring(1).Replace('/','\\');
-      var physicalFile = Path.Combine(WebApplicationProxy.WebRootFolder, virtualPath);
+      var physicalFile = Path.Combine(RootFolder, thisPath);
 
-      return new FileInfo(physicalFile).Exists;
+      var outValue = new FileInfo(physicalFile).Exists;
+
+      Debug.WriteLine($"File ({physicalFile}) Exists: {outValue}");
+
+      return outValue;
+
+    }
+
+    internal static string ReformatPath(string virtualPath)
+    {
+      var thisPath = virtualPath.Replace("~/", "/");
+      if (thisPath.StartsWith("/")) thisPath = thisPath.Substring(1);
+
+      if (thisPath.Contains('/')) thisPath = thisPath.Replace('/', '\\');
+      return thisPath;
     }
 
     public override string GetCacheKey(string virtualPath)
@@ -44,6 +61,24 @@ namespace Fritz.WebFormsTest.Internal
       var outKey = base.GetCacheKey(virtualPath);
       return outKey;
     }
+
+    public override VirtualFile GetFile(string virtualPath)
+    {
+      return new TestVirtualFile(virtualPath);
+    }
+
+    private string RootFolder
+    {
+      get
+      {
+
+        var p = typeof(HttpRuntime).GetField("_DefaultPhysicalPathOnMapPathFailure", BindingFlags.NonPublic | BindingFlags.Static);
+        return p.GetValue(null).ToString();
+
+
+      }
+    }
+
 
   }
 

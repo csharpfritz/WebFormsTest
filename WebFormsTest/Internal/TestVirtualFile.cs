@@ -17,7 +17,7 @@ namespace Fritz.WebFormsTest.Internal
     public TestVirtualFile(string virtualPath) : base(virtualPath)
     {
       _VirtualPath = virtualPath;
-      _PhysicalPath = Path.Combine(WebApplicationProxy.WebRootFolder, virtualPath);
+      _PhysicalPath = Path.Combine(WebApplicationProxy.WebRootFolder, TestVirtualPathProvider.ReformatPath(virtualPath));
       _FileInfo = new FileInfo(_PhysicalPath);
     }
 

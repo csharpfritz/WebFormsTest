@@ -16,7 +16,6 @@
 		<description>Unit Test Harness for ASP.NET Web Forms objects</description>
 		<summary>Unit test harness to assist in testing code-behind files in ASP.NET Web Forms projects</summary>
 		<releaseNotes>v1.0.0 - Rewrote interactions with HttpContext to remove need for mocking and to remove the need for TestablePage.</releaseNotes>
-		<copyright>Copyright 2016 Jeffrey T. Fritz</copyright>
 		<tags>asp.net test unittest</tags>
 	</metadata>
 	<files>

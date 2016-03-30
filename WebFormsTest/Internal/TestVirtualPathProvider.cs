@@ -41,8 +41,6 @@ namespace Fritz.WebFormsTest.Internal
 
       var outValue = new FileInfo(physicalFile).Exists;
 
-      Debug.WriteLine($"File ({physicalFile}) Exists: {outValue}");
-
       return outValue;
 
     }
@@ -67,7 +65,7 @@ namespace Fritz.WebFormsTest.Internal
       return new TestVirtualFile(virtualPath);
     }
 
-    private string RootFolder
+    internal static string RootFolder
     {
       get
       {

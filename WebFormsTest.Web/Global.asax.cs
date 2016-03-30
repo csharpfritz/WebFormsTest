@@ -16,8 +16,7 @@ namespace Fritz.WebFormsTest.Web
             // Code that runs on application startup
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
-      // NOTE: Just get by this for now
-      //BundleConfig.RegisterBundles(BundleTable.Bundles);
-    }
+            BundleConfig.RegisterBundles(BundleTable.Bundles);
+        }
     }
 }

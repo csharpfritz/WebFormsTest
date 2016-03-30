@@ -19,7 +19,7 @@ namespace Fritz.WebFormsTest.Internal
     public TestVirtualDirectory(string virtualPath) : base(virtualPath)
     {
       _VirtualPath = virtualPath;
-      _PhysicalPath = Path.Combine(WebApplicationProxy.WebRootFolder, virtualPath.Substring(1));
+      _PhysicalPath = Path.Combine(TestVirtualPathProvider.RootFolder, TestVirtualPathProvider.ReformatPath(virtualPath));
       _DirectoryInfo = new DirectoryInfo(_PhysicalPath);
     }
 
@@ -65,7 +65,7 @@ namespace Fritz.WebFormsTest.Internal
 
         foreach (var f in files)
         {
-          outFiles.Add(new TestVirtualFile(workingVirtualPath + f.Name));
+          outFiles.Add(new TestVirtualFile(workingVirtualPath + "/" + f.Name));
         }
 
         return outFiles;

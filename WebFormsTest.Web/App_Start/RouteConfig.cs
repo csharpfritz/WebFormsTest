@@ -12,7 +12,7 @@ namespace Fritz.WebFormsTest
     {
       var settings = new FriendlyUrlSettings();
       settings.AutoRedirectMode = RedirectMode.Permanent;
-      // routes.EnableFriendlyUrls(settings);
+      routes.EnableFriendlyUrls(settings);
 
       routes.MapPageRoute("scenarioDefault", "tests", "~/Scenarios/Default.aspx");
 

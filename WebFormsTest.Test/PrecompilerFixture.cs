@@ -23,7 +23,8 @@ namespace Fritz.WebFormsTest.Test
       var currentFolder = new DirectoryInfo(Path.GetDirectoryName(codeBase.LocalPath));
       WebFolder = currentFolder.Parent.Parent.Parent.GetDirectories("WebFormsTest.Web")[0];
 
-      WebApplicationProxy.Create(WebFolder.FullName, true);
+      //WebApplicationProxy.Create(WebFolder.FullName, true);
+      WebApplicationProxy.Create(typeof(_Default));
 
     }
 

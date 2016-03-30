@@ -35,6 +35,7 @@ namespace Fritz.WebFormsTest
 
     // Identical to SessionStateUtility.SESSION_KEY
     private const String SESSION_KEY = "AspSession";
+    private static DummyRegisteredObject _DummyRegisteredObject;
 
     /// <summary>
     /// Create a proxy for the web application to be inspected
@@ -68,6 +69,9 @@ namespace Fritz.WebFormsTest
       InjectTestValuesIntoHttpRuntime();
 
       _hostingEnvironment = new HostingEnvironmentWrapper();
+
+      _DummyRegisteredObject = new DummyRegisteredObject();
+      HostingEnvironment.RegisterObject(_DummyRegisteredObject);
 
       SubstituteDummyHttpContext("/");
 
@@ -465,6 +469,14 @@ namespace Fritz.WebFormsTest
 
 
     #endregion
+
+    internal class DummyRegisteredObject : IRegisteredObject
+    {
+      public void Stop(bool immediate)
+      {
+        return;
+      }
+    }
 
   }
 

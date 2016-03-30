@@ -2,7 +2,7 @@
 <package >
 	<metadata>
 		<id>WebFormsTest</id>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 		<title>WebFormsTest</title>
 		<authors>Jeffrey T. Fritz</authors>
 		<owners>csharpfritz</owners>
@@ -15,7 +15,7 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>Unit Test Harness for ASP.NET Web Forms objects</description>
 		<summary>Unit test harness to assist in testing code-behind files in ASP.NET Web Forms projects</summary>
-		<releaseNotes>v1.0.0 - Rewrote interactions with HttpContext to remove need for mocking and to remove the need for TestablePage.</releaseNotes>
+		<releaseNotes>v1.0.1 - Added support for FriendlyUrls and Bundles.</releaseNotes>
 		<tags>asp.net test unittest</tags>
 	</metadata>
 	<files>

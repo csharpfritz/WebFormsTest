@@ -8,16 +8,14 @@ namespace Fritz.WebFormsTest
   public class WebApplicationProxyOptions
   {
 
-    public static readonly WebApplicationProxyOptions DEFAULT = new WebApplicationProxyOptions
-    {
-      SkipCrawl = true,
-      SkipPrecompile = true
-    };
+    public bool SkipCrawl { get; set; } = true;
 
-    public bool SkipCrawl { get; set; }
+    public bool SkipPrecompile { get; set; } = true;
 
-    public bool SkipPrecompile { get; set; }
-
+    /// <summary>
+    /// Location of the website on disk, overrides the auto-locator
+    /// </summary>
+    public string WebFolder { get; set; }
   }
 
 }

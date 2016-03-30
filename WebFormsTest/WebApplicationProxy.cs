@@ -1,4 +1,5 @@
 ﻿using Fritz.WebFormsTest.Internal;
+using Mono.Cecil;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -59,10 +60,24 @@ namespace Fritz.WebFormsTest
     public static void Create(Type sampleWebType, WebApplicationProxyOptions options = null)
     {
 
+      DirectoryInfo webFolder;
+
+      if (options != null && options.WebFolder != null)
+      {
+        webFolder = new DirectoryInfo(options.WebFolder);
+      }
+      else {
+
+        webFolder = LocateSourceFolder(sampleWebType);
+
+        Create(webFolder.FullName, options?.SkipCrawl ?? true, options?.SkipPrecompile ?? true);
+
+      }
+
     }
 
-
-    private static void Create(string rootFolder, bool skipCrawl = true, bool skipPrecompile = true)
+    [Obsolete("Use the autolocate-enabled signature")]
+    public static void Create(string rootFolder, bool skipCrawl = true, bool skipPrecompile = true)
     {
       _Instance = new WebApplicationProxy(rootFolder, skipCrawl, skipPrecompile);
 
@@ -433,6 +448,26 @@ namespace Fritz.WebFormsTest
 
       return outType;
 
+    }
+
+    private static DirectoryInfo LocateSourceFolder(Type sampleWebType)
+    {
+      DirectoryInfo webFolder;
+      var parms = new ReaderParameters { ReadSymbols = true };
+      var assemblyDef = AssemblyDefinition.ReadAssembly(new Uri(sampleWebType.Assembly.CodeBase).LocalPath);
+
+      byte[] debugHeader;
+      var img = assemblyDef.MainModule.GetDebugHeader(out debugHeader);
+      var pdbFilename = Encoding.ASCII.GetString(debugHeader.Skip(24).Take(debugHeader.Length - 25).ToArray());
+      var pdbFile = new FileInfo(pdbFilename);
+      webFolder = pdbFile.Directory;
+
+      while ((webFolder.GetFiles("*.csproj").Length == 0 && webFolder.GetFiles("*.vbproj").Length == 0))
+      {
+        webFolder = webFolder.Parent;
+      }
+
+      return webFolder;
     }
 
 

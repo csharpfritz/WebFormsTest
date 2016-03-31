@@ -21,7 +21,7 @@ namespace Fritz.WebFormsTest.Test
   /// A fixture that will inspect to ensure that the MasterPage is hydrated properly in a page
   /// </summary>
   [Collection("Precompiler collection")]
-  public class RehydrateMasterPageFixture : BaseFixture
+  public class RehydrateMasterPageFixture
   {
     private ITestOutputHelper _helper;
 

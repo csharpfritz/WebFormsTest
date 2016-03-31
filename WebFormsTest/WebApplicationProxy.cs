@@ -3,11 +3,9 @@ using Mono.Cecil;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
@@ -57,6 +55,11 @@ namespace Fritz.WebFormsTest
     }
 
 
+    /// <summary>
+    /// Create a Proxy to the Web Application that contains the type submitted
+    /// </summary>
+    /// <param name="sampleWebType">A sample type from the assembly of the web project to be tested</param>
+    /// <param name="options">Options to configure the proxy</param>
     public static void Create(Type sampleWebType, WebApplicationProxyOptions options = null)
     {
 
@@ -214,6 +217,16 @@ namespace Fritz.WebFormsTest
     /// <returns>The Page object from the specified location</returns>
     public static object GetPageByLocation(string location, Action<HttpContext> contextModifiers = null)
     {
+      return GetPageByLocation(location, BrowserDefinitions.DEFAULT, contextModifiers);
+    }
+
+    /// <summary>
+    /// Get a fully instantiated Page at the web location specified
+    /// </summary>
+    /// <param name="location">The web absolute folder location to retrive the Page from</param>
+    /// <returns>The Page object from the specified location</returns>
+    public static object GetPageByLocation(string location, HttpBrowserCapabilities browserCaps, Action<HttpContext> contextModifiers = null)
+    {
 
       if (_Instance == null || !_Instance.Initialized) throw new InvalidOperationException("The WebApplicationProxy has not been created and initialized properly");
 
@@ -223,9 +236,6 @@ namespace Fritz.WebFormsTest
       if (contextModifiers != null) contextModifiers(HttpContext.Current);
 
       dynamic outObj = Activator.CreateInstance(returnType);
-
-      // TODO: This will change to set HttpContext.Current which should trickle down to the Page object
-
 
       // Prepare the page for testing
       if (outObj is Page) ((Page)outObj).PrepareForTest();
@@ -247,6 +257,19 @@ namespace Fritz.WebFormsTest
     {
 
       return GetPageByLocation(location, contextModifiers) as T;
+
+    }
+
+    /// <summary>
+    /// Get a fully instantiated Page at the web location specified
+    /// </summary>
+    /// <typeparam name="T">The type of the Page to fetch</typeparam>
+    /// <param name="location">The web absolute folder location to retrive the Page from</param>
+    /// <returns>A strongly-typed Page object from the specified location</returns>
+    public static T GetPageByLocation<T>(string location, HttpBrowserCapabilities browserCaps, Action<HttpContext> contextModifiers = null) where T : Page
+    {
+
+      return GetPageByLocation(location, browserCaps, contextModifiers) as T;
 
     }
 
@@ -352,47 +375,19 @@ namespace Fritz.WebFormsTest
     /// <summary>
     /// Swap in a dummy HttpContext for HttpContext.Current, valid for current thread only
     /// </summary>
-    internal static void SubstituteDummyHttpContext(string location)
-    {
-
-      HttpContext.Current = GetTestContext(location);
-
-    }
-
-    private static HttpContext GetTestContext(string location)
+    internal static void SubstituteDummyHttpContext(string location, HttpBrowserCapabilities caps = null)
     {
 
       var workerRequest = new TestHttpWorkerRequest(location);
       var testContext = new HttpContext(workerRequest);
 
       // BrowserCapabilities
-      HttpBrowserCapabilities caps = GetBrowserCaps();
-      typeof(HttpRequest).GetField("_browsercaps", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(testContext.Request, caps);
+      caps = caps ?? BrowserDefinitions.DEFAULT;
+      testContext.Request.SetBrowserCaps(caps);
 
       testContext.Items["IsInTestMode"] = true;
 
-      return testContext;
-
-    }
-
-    private static HttpBrowserCapabilities GetBrowserCaps()
-    {
-
-      var caps = new HttpBrowserCapabilities();
-
-      IDictionary items = new Dictionary<string, object>();
-      items.Add("cookies", "false");
-      items.Add("ecmascriptversion", "3.0.0"); // Everyone has 5 for now...
-      items.Add("preferredRenderingMime", "text/html");
-      items.Add("preferredRequestEncoding", "UTF-8");
-      items.Add("preferredResponseEncoding", "UTF-8");
-      items.Add("requiresXhtmlCssSuppression", "false");
-      items.Add("w3cdomversion", "1.0.0");
-
-      typeof(HttpCapabilitiesBase).GetField("_items", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(caps, items);
-
-      return caps;
-
+      HttpContext.Current = testContext;
 
     }
 

@@ -16,12 +16,12 @@ namespace Fritz.WebFormsTest.Test
   /// A fixture that will inspect and test the postback handling of controls with Static client ids
   /// </summary>
   [Collection("Precompiler collection")]
-  public class Postback_Simple_Fixture : BaseFixture
+  public class Postback_Simple_Fixture 
   {
 
     private readonly ITestOutputHelper output;
 
-    public Postback_Simple_Fixture(ITestOutputHelper output, PrecompilerFixture precompiler)
+    public Postback_Simple_Fixture(ITestOutputHelper output, PrecompiledWebConfiguration precompiler)
     {
       this.output = output;
     }

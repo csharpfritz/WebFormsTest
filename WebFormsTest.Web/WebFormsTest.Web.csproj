@@ -193,6 +193,7 @@
     <Content Include="Scenarios\ControlTree\Buttons_AutoId.aspx" />
     <Content Include="Scenarios\Postback\Textbox_StaticId.aspx" />
     <Content Include="Scenarios\RunToEvent\VerifyOrder.aspx" />
+    <Content Include="Scenarios\WebConfig\AppSettings.aspx" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -294,6 +295,13 @@
     </Compile>
     <Compile Include="Scenarios\RunToEvent\VerifyOrder.aspx.designer.cs">
       <DependentUpon>VerifyOrder.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Scenarios\WebConfig\AppSettings.aspx.cs">
+      <DependentUpon>AppSettings.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Scenarios\WebConfig\AppSettings.aspx.designer.cs">
+      <DependentUpon>AppSettings.aspx</DependentUpon>
     </Compile>
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>

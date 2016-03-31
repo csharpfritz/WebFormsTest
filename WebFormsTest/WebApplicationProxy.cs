@@ -84,6 +84,8 @@ namespace Fritz.WebFormsTest
     {
       _Instance = new WebApplicationProxy(rootFolder, skipCrawl, skipPrecompile);
 
+      ReadWebConfig();
+
       InjectTestValuesIntoHttpRuntime();
 
       _hostingEnvironment = new HostingEnvironmentWrapper();
@@ -496,7 +498,13 @@ namespace Fritz.WebFormsTest
 
     }
 
+    private static void ReadWebConfig()
+    {
 
+      AppDomain.CurrentDomain.SetData("APP_CONFIG_FILE", Path.Combine(WebRootFolder, "web.config"));
+//      WebConfigurationManager.OpenWebConfiguration(Path.Combine(WebRootFolder, "web.con‌​fig"));
+
+    }
 
     #endregion
 

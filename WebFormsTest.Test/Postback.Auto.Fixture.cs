@@ -11,7 +11,7 @@ namespace Fritz.WebFormsTest.Test
 {
 
   [Collection("Precompiler collection")]
-  public class Postback_Auto_Fixture : BaseFixture
+  public class Postback_Auto_Fixture 
   {
 
     private readonly ITestOutputHelper output;

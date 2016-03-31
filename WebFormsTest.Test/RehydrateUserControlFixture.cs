@@ -13,7 +13,7 @@ namespace Fritz.WebFormsTest.Test
 
 
   [Collection("Precompiler collection")]
-  public class RehydrateUserControlFixture : BaseFixture
+  public class RehydrateUserControlFixture
   {
 
 

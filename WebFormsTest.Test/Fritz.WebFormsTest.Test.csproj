@@ -96,6 +96,7 @@
   <ItemGroup>
     <Compile Include="AutoEventFixture.cs" />
     <Compile Include="BaseFixture.cs" />
+    <Compile Include="BrowserCapsFixture.cs" />
     <Compile Include="CacheFixture.cs" />
     <Compile Include="ControlFireEventFixture.cs" />
     <Compile Include="Internal\VirtualPathFixture.cs" />

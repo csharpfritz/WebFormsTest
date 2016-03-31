@@ -11,7 +11,7 @@ namespace Fritz.WebFormsTest.Test
 {
 
   [Collection("Precompiler collection")]
-  public class ControlFireEventFixture : BaseFixture
+  public class ControlFireEventFixture 
   {
 
     [Fact]

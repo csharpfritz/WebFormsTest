@@ -18,7 +18,7 @@ using Xunit.Abstractions;
 namespace Fritz.WebFormsTest.Test
 {
   [Collection("Precompiler collection")]
-  public class WebApplicationProxyFixture : BaseFixture
+  public class WebApplicationProxyFixture 
   {
 
     private PrecompiledWebConfiguration _Fixture;

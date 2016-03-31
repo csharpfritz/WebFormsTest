@@ -16,6 +16,8 @@ namespace Fritz.WebFormsTest
     /// Location of the website on disk, overrides the auto-locator
     /// </summary>
     public string WebFolder { get; set; }
+
+
   }
 
 }

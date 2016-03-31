@@ -102,7 +102,7 @@
     <Compile Include="Postback.Auto.Fixture.cs" />
     <Compile Include="Postback.Simple.Fixture.cs" />
     <Compile Include="DefaultPageFixture.cs" />
-    <Compile Include="PrecompilerFixture.cs" />
+    <Compile Include="PrecompiledWebConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RehydrateMasterPageFixture.cs" />
     <Compile Include="RehydrateUserControlFixture.cs" />

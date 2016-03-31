@@ -21,10 +21,10 @@ namespace Fritz.WebFormsTest.Test
   public class WebApplicationProxyFixture : BaseFixture
   {
 
-    private PrecompilerFixture _Fixture;
+    private PrecompiledWebConfiguration _Fixture;
     private ITestOutputHelper _testHelper;
 
-    public WebApplicationProxyFixture(PrecompilerFixture fixture, ITestOutputHelper helper)
+    public WebApplicationProxyFixture(PrecompiledWebConfiguration fixture, ITestOutputHelper helper)
     {
       _Fixture = fixture;
 

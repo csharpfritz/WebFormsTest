@@ -1,4 +1,5 @@
-﻿using Fritz.WebFormsTest.Web;
+﻿using Fritz.WebFormsTest.Internal;
+using Fritz.WebFormsTest.Web;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace Fritz.WebFormsTest.Test
     {
 
       // Arrange
-      WebApplicationProxy.SubstituteDummyHttpContext("/");
+      WebApplicationManager.SubstituteDummyHttpContext("/");
 
       // Act
       HttpContext testContext = HttpContext.Current;

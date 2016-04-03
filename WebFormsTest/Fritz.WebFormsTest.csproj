@@ -73,8 +73,10 @@
     <Compile Include="HttpContextExtensions.cs" />
     <Compile Include="Internal\BrowserCapsExtensions.cs" />
     <Compile Include="Internal\BuildManagerWrapper.cs" />
+    <Compile Include="Internal\ClientBuildManagerExtensions.cs" />
     <Compile Include="Internal\HostingEnvironmentWrapper.cs" />
     <Compile Include="Internal\HttpRequestExtensions.cs" />
+    <Compile Include="Internal\HttpRuntimeExtensions.cs" />
     <Compile Include="Internal\InternalPageExtensions.cs" />
     <Compile Include="Internal\TestConfigMapPath.cs" />
     <Compile Include="Internal\TestHttpSessionStateContainer.cs" />

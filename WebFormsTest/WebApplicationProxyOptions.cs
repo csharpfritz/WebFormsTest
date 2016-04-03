@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Fritz.WebFormsTest
 {
-  public class WebApplicationProxyOptions
+  public class WebApplicationProxyOptions : MarshalByRefObject
   {
 
     public bool SkipCrawl { get; set; } = true;

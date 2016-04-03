@@ -19,11 +19,6 @@ namespace Fritz.WebFormsTest.Test
     public PrecompiledWebConfiguration()
     {
 
-      Uri codeBase = new Uri(GetType().Assembly.CodeBase);
-      var currentFolder = new DirectoryInfo(Path.GetDirectoryName(codeBase.LocalPath));
-      WebFolder = currentFolder.Parent.Parent.Parent.GetDirectories("WebFormsTest.Web")[0];
-
-      //WebApplicationProxy.Create(WebFolder.FullName, true);
       WebApplicationProxy.Create(typeof(_Default));
 
     }

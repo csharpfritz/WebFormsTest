@@ -82,7 +82,7 @@ namespace Fritz.WebFormsTest.Test
       // Arrange
 
       // Act
-      var t = WebApplicationProxy.GetHttpApplicationType();
+      var t = WebApplicationProxy._Instance.GetHttpApplicationType();
 
       // Assert
       Assert.NotNull(t);

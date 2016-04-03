@@ -3,10 +3,12 @@ using Mono.Cecil;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Compilation;
@@ -21,31 +23,29 @@ namespace Fritz.WebFormsTest
   /// <summary>
   /// A class that wraps a web application project and provides access to the .NET code contained within
   /// </summary>
-  public class WebApplicationProxy : IDisposable
+  public class WebApplicationProxy : MarshalByRefObject, IDisposable
   {
 
-    private static WebApplicationProxy _Instance;
+    internal static WebApplicationProxy _Instance;
     private readonly Dictionary<Type, string> _LocationTypeMap = new Dictionary<Type, string>();
     private ClientBuildManager _compiler;
     private bool _SkipCrawl = false;
-    private bool Initialized = false;
+    internal bool Initialized = false;
     private bool _SkipPrecompile = true;
-    private static HostingEnvironmentWrapper _hostingEnvironment;
+    private HostingEnvironmentWrapper _hostingEnvironment;
 
     // Identical to SessionStateUtility.SESSION_KEY
     private const String SESSION_KEY = "AspSession";
     private static DummyRegisteredObject _DummyRegisteredObject;
+    private static AppDomain _ShadowDomain;
+    private static WebApplicationManager _WebAppManager;
 
     /// <summary>
     /// Create a proxy for the web application to be inspected
     /// </summary>
     /// <param name="rootFolder">Physical location on disk of the web application source code</param>
-    private WebApplicationProxy(string rootFolder, bool skipCrawl, bool skipPrecompile)
+    public WebApplicationProxy()
     {
-
-      WebRootFolder = rootFolder;
-      _SkipCrawl = skipCrawl;
-      _SkipPrecompile = skipPrecompile;
 
     }
 
@@ -65,9 +65,9 @@ namespace Fritz.WebFormsTest
 
       DirectoryInfo webFolder;
 
-      if (options != null && options.WebFolder != null)
+      if (options != null && options.PhysicalRootFolder != null)
       {
-        webFolder = new DirectoryInfo(options.WebFolder);
+        webFolder = new DirectoryInfo(options.PhysicalRootFolder);
       }
       else {
 
@@ -82,30 +82,49 @@ namespace Fritz.WebFormsTest
     [Obsolete("Use the autolocate-enabled signature")]
     public static void Create(string rootFolder, bool skipCrawl = true, bool skipPrecompile = true)
     {
-      _Instance = new WebApplicationProxy(rootFolder, skipCrawl, skipPrecompile);
 
-      ReadWebConfig();
+      // Hide the instance of the WebApplication proxy in another domain so that it behaves more like a web app
+      _ShadowDomain = AppDomain.CreateDomain("TestDomain", null, AppDomain.CurrentDomain.BaseDirectory, null, false);
+      Debug.WriteLine($"base directory: {_ShadowDomain.BaseDirectory}");
 
-      InjectTestValuesIntoHttpRuntime();
+      var thisType = typeof(WebApplicationManager);
+      var thisRef = _ShadowDomain.CreateInstance(thisType.Assembly.FullName, thisType.FullName);
+      _WebAppManager = thisRef.Unwrap() as WebApplicationManager;
+      _WebAppManager.Initialize(new WebApplicationProxyOptions
+      {
+        PhysicalRootFolder = rootFolder,
+        SkipCrawl = skipCrawl,
+        SkipPrecompile = skipPrecompile
+      });
 
-      _hostingEnvironment = new HostingEnvironmentWrapper();
-
-      _DummyRegisteredObject = new DummyRegisteredObject();
-      HostingEnvironment.RegisterObject(_DummyRegisteredObject);
-
-      SubstituteDummyHttpContext("/");
-
-      _Instance.InitializeInternal();
-
+      Debug.WriteLine($"WebAppMgr IsInitialized: {_WebAppManager.IsInitialized()}");
+            
     }
 
     /// <summary>
     /// Inspect the application and create mappings for all types
     /// </summary>
-    private void InitializeInternal()
+    private void InitializeInternal(string rootFolder, bool skipCrawl, bool skipPrecompile)
     {
 
       if (Initialized) return;
+
+      WebRootFolder = rootFolder;
+      _SkipCrawl = skipCrawl;
+      _SkipPrecompile = skipPrecompile;
+
+      ReadWebConfig();
+
+      // MOVED
+      //InjectTestValuesIntoHttpRuntime();
+
+      //_hostingEnvironment = new HostingEnvironmentWrapper();
+
+      //_DummyRegisteredObject = new DummyRegisteredObject();
+      //HostingEnvironment.RegisterObject(_DummyRegisteredObject);
+
+      // Mimic a first request that starts the JIT of the web application
+      SubstituteDummyHttpContext("/");
 
       // Can this go async?
       _compiler = new ClientBuildManager(@"/",
@@ -156,7 +175,7 @@ namespace Fritz.WebFormsTest
     private void SetHttpRuntimeAppDomainAppPath()
     {
       var p = typeof(HttpRuntime).GetField("_appDomainAppPath", BindingFlags.NonPublic | BindingFlags.Instance);
-      p.SetValue(HttpRuntimeInstance, WebApplicationProxy.WebPrecompiledFolder);
+      p.SetValue(HttpRuntimeInstance, _compiler.CodeGenDir);
 
       //var getAppDomainMethod = typeof(HttpRuntime).GetMethod("GetAppDomainString", BindingFlags.NonPublic | BindingFlags.Static);
       //var appId = getAppDomainMethod.Invoke(null, new object[] { ".appId" });
@@ -177,26 +196,6 @@ namespace Fritz.WebFormsTest
     /// Check if the Proxy is running
     /// </summary>
     public static bool IsInitialized {  get { return _Instance != null ? _Instance.Initialized : false; } }
-
-    /// <summary>
-    /// Add some needed configuration to the HttpRuntime so that it thinks we are running in a Web Service
-    /// </summary>
-    private static void InjectTestValuesIntoHttpRuntime()
-    {
-
-      var p = typeof(HttpRuntime).GetField("_appDomainAppVPath", BindingFlags.NonPublic | BindingFlags.Instance);
-      p.SetValue(HttpRuntimeInstance, VirtualPathWrapper.Create("/").VirtualPath);
-
-    }
-
-    private static HttpRuntime HttpRuntimeInstance
-    {
-      get
-      {
-        var getRunTime = typeof(HttpRuntime).GetField("_theRuntime", BindingFlags.NonPublic | BindingFlags.Static);
-        return getRunTime.GetValue(null) as HttpRuntime;
-      }
-    }
 
     /// <summary>
     /// Inspect the source code of the application, gathering the page locations and the types at those locations
@@ -230,9 +229,21 @@ namespace Fritz.WebFormsTest
     public static object GetPageByLocation(string location, HttpBrowserCapabilities browserCaps, Action<HttpContext> contextModifiers = null)
     {
 
+      Debug.WriteLine($"Domain: {AppDomain.CurrentDomain.FriendlyName}");
+
       if (_Instance == null || !_Instance.Initialized) throw new InvalidOperationException("The WebApplicationProxy has not been created and initialized properly");
 
-      var returnType = _Instance._compiler.GetCompiledType(location);
+      // Redirecting to the instance inner method to allow this to take place in the Shadow AppDomain
+      return _Instance.InnerGetPageByLocation(location, browserCaps, contextModifiers);
+
+    }
+
+    private object InnerGetPageByLocation(string location, HttpBrowserCapabilities browserCaps, Action<HttpContext> contextModifiers = null)
+    {
+
+      Debug.WriteLine($"Domain: {AppDomain.CurrentDomain.FriendlyName}");
+
+      var returnType = _compiler.GetCompiledType(location);
       SubstituteDummyHttpContext(location);
 
       if (contextModifiers != null) contextModifiers(HttpContext.Current);
@@ -245,7 +256,6 @@ namespace Fritz.WebFormsTest
       CompleteHttpContext(HttpContext.Current);
 
       return outObj;
-
 
     }
 
@@ -402,22 +412,17 @@ namespace Fritz.WebFormsTest
 
     }
 
-    public static string WebPrecompiledFolder
-    {
-      get { return _Instance._compiler.CodeGenDir; }
-    }
-
     #region Private Methods
 
     /// <summary>
     /// Get the HttpApplication Type (typically named Global) from the application
     /// </summary>
     /// <returns></returns>
-    internal static Type GetHttpApplicationType()
+    internal Type GetHttpApplicationType()
     {
 
       // Force the web application to be loaded 
-      _Instance._compiler.GetCompiledType("/Default.aspx");
+      _compiler.GetCompiledType("/Default.aspx");
 
       // Search the AppDomain of loaded types that inherit from HttpApplication, starting with "Global"
       Type httpApp = typeof(HttpApplication);
@@ -476,7 +481,7 @@ namespace Fritz.WebFormsTest
 
     }
 
-    private static void CreateHttpApplication()
+    private void CreateHttpApplication()
     {
 
       // Create the Global / HttpApplication object
@@ -501,20 +506,12 @@ namespace Fritz.WebFormsTest
     private static void ReadWebConfig()
     {
 
+      // NOTE: This needs to happen in the shadow AppDomain
       AppDomain.CurrentDomain.SetData("APP_CONFIG_FILE", Path.Combine(WebRootFolder, "web.config"));
-//      WebConfigurationManager.OpenWebConfiguration(Path.Combine(WebRootFolder, "web.con‌​fig"));
 
     }
 
     #endregion
-
-    internal class DummyRegisteredObject : IRegisteredObject
-    {
-      public void Stop(bool immediate)
-      {
-        return;
-      }
-    }
 
   }
 

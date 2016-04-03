@@ -15,31 +15,31 @@ namespace Fritz.WebFormsTest.Internal
   {
 
     private static readonly HostingEnvironmentWrapper _Instance;
-
+    private DummyRegisteredObject _DummyRegisteredObject;
     private readonly HostingEnvironment _Inner;
     private readonly Type _Type = typeof(HostingEnvironment);
     private readonly TestVirtualPathProvider _VirtualPathProvider = new TestVirtualPathProvider();
 
 
-    static HostingEnvironmentWrapper()
-    {
-
-      _Instance = new HostingEnvironmentWrapper(new object());
-
-    }
-
-    /// <summary>
-    /// Do nothing
-    /// </summary>
-    public HostingEnvironmentWrapper() { }
-
-    private HostingEnvironmentWrapper(object stub)
+    public HostingEnvironmentWrapper()
     {
 
       _Inner = new HostingEnvironment();
 
       Configure();
 
+      RegisterDummyObject();
+
+    }
+
+    /// <summary>
+    /// Register a dummy object that will prevent the hosting environment from being torn down
+    /// by the ASP.NET management process during testing
+    /// </summary>
+    private void RegisterDummyObject()
+    {
+      _DummyRegisteredObject = new DummyRegisteredObject();
+      HostingEnvironment.RegisterObject(_DummyRegisteredObject);
     }
 
     private void Configure()
@@ -61,6 +61,14 @@ namespace Fritz.WebFormsTest.Internal
 
       return HostingEnvironmentWrapper._Instance._Inner;
 
+    }
+
+    internal class DummyRegisteredObject : IRegisteredObject
+    {
+      public void Stop(bool immediate)
+      {
+        return;
+      }
     }
 
   }

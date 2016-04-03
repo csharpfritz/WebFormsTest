@@ -81,6 +81,7 @@
     <Compile Include="Internal\TestVirtualDirectory.cs" />
     <Compile Include="Internal\TestVirtualFile.cs" />
     <Compile Include="Internal\TestVirtualPathProvider.cs" />
+    <Compile Include="Internal\WebApplicationManager.cs" />
     <Compile Include="MasterPageReflectionExtensions.cs" />
     <Compile Include="PageExtensions.cs" />
     <Compile Include="TestHttpWorkerRequest.cs" />

@@ -16,7 +16,7 @@ namespace Fritz.WebFormsTest.Test
   /// A collection of tests to verify the Cache is available and functioning
   /// </summary>
   [Collection("Precompiler collection")]
-  public class CacheFixture : BaseFixture
+  public class CacheFixture 
   {
 
     [Fact]

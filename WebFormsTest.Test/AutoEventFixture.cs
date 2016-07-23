@@ -20,9 +20,9 @@ namespace Fritz.WebFormsTest.Test
     private readonly Mock<HttpResponseBase> response;
     private readonly Mock<HttpRequestBase> request;
 
-    public PrecompilerFixture Precompiler { get; private set; }
+    public PrecompiledWebConfiguration Precompiler { get; private set; }
 
-    public AutoEventFixture(PrecompilerFixture precompiler)
+    public AutoEventFixture(PrecompiledWebConfiguration precompiler)
     {
 
       this.Precompiler = precompiler;

@@ -13,17 +13,18 @@ using Xunit.Abstractions;
 namespace Fritz.WebFormsTest.Test
 {
 
-  public class PrecompilerFixture : IDisposable
+  public class PrecompiledWebConfiguration : IDisposable
   {
 
-    public PrecompilerFixture()
+    public PrecompiledWebConfiguration()
     {
 
       Uri codeBase = new Uri(GetType().Assembly.CodeBase);
       var currentFolder = new DirectoryInfo(Path.GetDirectoryName(codeBase.LocalPath));
       WebFolder = currentFolder.Parent.Parent.Parent.GetDirectories("WebFormsTest.Web")[0];
 
-      WebApplicationProxy.Create(WebFolder.FullName, true);
+      //WebApplicationProxy.Create(WebFolder.FullName, true);
+      WebApplicationProxy.Create(typeof(_Default));
 
     }
 
@@ -37,7 +38,7 @@ namespace Fritz.WebFormsTest.Test
   }
 
   [CollectionDefinition("Precompiler collection")]
-  public class PrecompiledWebCollection : ICollectionFixture<PrecompilerFixture>
+  public class PrecompiledWebCollection : ICollectionFixture<PrecompiledWebConfiguration>
   {
     // This class has no code, and is never created. Its purpose is simply
     // to be the place to apply [CollectionDefinition] and all the

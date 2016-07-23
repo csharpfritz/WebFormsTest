@@ -16,7 +16,7 @@ namespace Fritz.WebFormsTest.Test
   public class RunToEventFixture : BaseFixture
   {
 
-    public RunToEventFixture(PrecompilerFixture precompiler)
+    public RunToEventFixture(PrecompiledWebConfiguration precompiler)
     {
 
     }

@@ -28,15 +28,6 @@ namespace Fritz.WebFormsTest.Web
 
       Response.Write(LOAD_INDICATOR);
 
-      var getRunTime = typeof(HttpRuntime).GetField("_theRuntime", BindingFlags.NonPublic | BindingFlags.Static);
-      var theRunTime = getRunTime.GetValue(null) as HttpRuntime;
-
-      var p = typeof(HttpRuntime).GetField("_appDomainAppVPath", BindingFlags.NonPublic | BindingFlags.Instance);
-      var outValue = p.GetValue(theRunTime);
-
-      Response.Write("_appDomainAppVPath: " + outValue);
-
-
     }
 
     protected override void OnPreRender(EventArgs e)

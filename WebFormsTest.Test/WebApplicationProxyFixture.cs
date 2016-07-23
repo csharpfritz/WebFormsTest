@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Xunit;
@@ -17,13 +18,13 @@ using Xunit.Abstractions;
 namespace Fritz.WebFormsTest.Test
 {
   [Collection("Precompiler collection")]
-  public class WebApplicationProxyFixture : BaseFixture
+  public class WebApplicationProxyFixture 
   {
 
-    private PrecompilerFixture _Fixture;
+    private PrecompiledWebConfiguration _Fixture;
     private ITestOutputHelper _testHelper;
 
-    public WebApplicationProxyFixture(PrecompilerFixture fixture, ITestOutputHelper helper)
+    public WebApplicationProxyFixture(PrecompiledWebConfiguration fixture, ITestOutputHelper helper)
     {
       _Fixture = fixture;
 
@@ -158,7 +159,7 @@ namespace Fritz.WebFormsTest.Test
 
     }
 
-    [Fact(Skip = "true")]
+    [Fact]
     public void SupportBundleConfig()
     {
 
@@ -168,6 +169,14 @@ namespace Fritz.WebFormsTest.Test
       BundleConfig.RegisterBundles(BundleTable.Bundles);
 
       // Assert
+
+    }
+
+    [Fact]
+    public void HostingVirtualPathProviderIsSet()
+    {
+
+      Assert.NotNull(HostingEnvironment.VirtualPathProvider);
 
     }
 

@@ -98,6 +98,7 @@
     <Compile Include="BaseFixture.cs" />
     <Compile Include="BrowserCapsFixture.cs" />
     <Compile Include="CacheFixture.cs" />
+    <Compile Include="ContextFixture.cs" />
     <Compile Include="ControlFireEventFixture.cs" />
     <Compile Include="Internal\VirtualPathFixture.cs" />
     <Compile Include="ModelBindingFixture.cs" />

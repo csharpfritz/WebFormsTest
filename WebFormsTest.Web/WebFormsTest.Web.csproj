@@ -188,6 +188,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scenarios\Context\ResponseRedirect.aspx" />
     <Content Include="Scenarios\ControlTree\PageWithUserControl.aspx" />
     <Content Include="Scenarios\Default.aspx" />
     <Content Include="Scenarios\ControlTree\Buttons_AutoId.aspx" />
@@ -261,6 +262,13 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scenarios\Context\ResponseRedirect.aspx.cs">
+      <DependentUpon>ResponseRedirect.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Scenarios\Context\ResponseRedirect.aspx.designer.cs">
+      <DependentUpon>ResponseRedirect.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Scenarios\ControlTree\PageWithUserControl.aspx.cs">
       <DependentUpon>PageWithUserControl.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

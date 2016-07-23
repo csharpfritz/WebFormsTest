@@ -13,6 +13,8 @@ namespace Fritz.WebFormsTest
     private string _rawRequestUrl;
     private Uri _RequestUri;
     private VirtualPathWrapper _absoluteUrl;
+    private Dictionary<int, string> _headers = new Dictionary<int, string>();
+
 
     public TestHttpWorkerRequest(string rawRequestUrl)
     {
@@ -28,7 +30,7 @@ namespace Fritz.WebFormsTest
 
     public override void FlushResponse(bool finalFlush)
     {
-      throw new NotImplementedException();
+      // do nothing
     }
 
     public override string GetAppPath()
@@ -43,7 +45,7 @@ namespace Fritz.WebFormsTest
 
     public override string GetHttpVerbName()
     {
-      throw new NotImplementedException();
+        return "GET";
     }
 
     public override string GetHttpVersion()
@@ -97,7 +99,6 @@ namespace Fritz.WebFormsTest
     public override string GetKnownRequestHeader(int index)
     {
 
-      var _headers = new Dictionary<int, string>();
       _headers.Add(HeaderUserAgent, "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:43.0) Gecko/20100101 Firefox/43.0");
 
       if (_headers.ContainsKey(index))
@@ -108,7 +109,7 @@ namespace Fritz.WebFormsTest
 
     public override void SendKnownResponseHeader(int index, string value)
     {
-      throw new NotImplementedException();
+        _headers.Add(index, value);
     }
 
     public override void SendResponseFromFile(IntPtr handle, long offset, long length)
@@ -123,17 +124,18 @@ namespace Fritz.WebFormsTest
 
     public override void SendResponseFromMemory(byte[] data, int length)
     {
-      throw new NotImplementedException();
+      // do nothing... may need to serialize this somewhere to grab
     }
 
     public override void SendStatus(int statusCode, string statusDescription)
     {
-      throw new NotImplementedException();
+        //HttpContext.Current.Response.StatusCode = statusCode;
+        //HttpContext.Current.Response.StatusDescription = statusDescription;
     }
 
     public override void SendUnknownResponseHeader(string name, string value)
     {
-      throw new NotImplementedException();
+        //HttpContext.Current.Response.Headers.Add(name, value);
     }
   }
 

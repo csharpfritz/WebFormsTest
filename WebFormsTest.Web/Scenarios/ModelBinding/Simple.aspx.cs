@@ -9,25 +9,34 @@ namespace Fritz.WebFormsTest.Web.Scenarios.ModelBinding
 {
     public partial class Simple : System.Web.UI.Page
     {
-        protected void Page_Load(object sender, EventArgs e)
-        {
 
-        }
-
-
-        public IEnumerable<GridItem> Get()
-        {
-            return new GridItem[] {
+        public static readonly GridItem[] SampleItems = new GridItem[] {
                 new GridItem {ID=1, Name="Test" },
                 new GridItem {ID=2, Name="Foo" }
             };
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            Comment = new LiteralControl();
+            Page.Controls.Add(Comment);
+        }
+
+        internal LiteralControl Comment
+        {
+            get; set;
+        }
+
+        public IEnumerable<GridItem> Get()
+        {
+            return SampleItems;
+        }
+
+        public class GridItem
+        {
+            public int ID { get; set; }
+            public string Name { get; set; }
         }
 
     }
 
-    public class GridItem
-    {
-        public int ID { get; set; }
-        public string Name { get; set; }
-    }
 }

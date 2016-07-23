@@ -1,4 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Simple.aspx.cs" Inherits="Fritz.WebFormsTest.Web.Scenarios.ModelBinding.Simple" %>
+<%@ Register TagPrefix="fritz" Assembly="Fritz.WebFormsTest.Web" namespace="Fritz.WebFormsTest.Web.Scenarios.ModelBinding" %>
 
 <!DOCTYPE html>
 

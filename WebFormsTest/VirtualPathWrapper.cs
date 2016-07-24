@@ -90,25 +90,6 @@ namespace Fritz.WebFormsTest
       }
     }
 
-    //private static string MapPath(object virtualPath, object baseVirtualPath)
-    //{
-
-    //  var vp = Combine(virtualPath, baseVirtualPath);
-
-    //  var mi = VirtualPathType.GetMethod("MapPathInternal", BindingFlags.NonPublic | BindingFlags.Instance);
-    //  return mi.Invoke(vp, null).ToString();
-
-    //}
-
-    //public static string MapPath(string virtualPath)
-    //{
-
-    //  var myVPath = Create(virtualPath);
-
-    //  return VirtualPathWrapper. MapPath(WebApplicationProxy.BaseVirtualPath, myVPath);
-      
-    //}
-
   }
 
 }

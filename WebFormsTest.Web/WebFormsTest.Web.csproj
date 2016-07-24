@@ -191,6 +191,7 @@
     <Content Include="Scenarios\ControlTree\PageWithUserControl.aspx" />
     <Content Include="Scenarios\Default.aspx" />
     <Content Include="Scenarios\ControlTree\Buttons_AutoId.aspx" />
+    <Content Include="Scenarios\ModelBinding\EditForm.aspx" />
     <Content Include="Scenarios\ModelBinding\Simple.aspx" />
     <Content Include="Scenarios\Postback\Textbox_StaticId.aspx" />
     <Content Include="Scenarios\RunToEvent\VerifyOrder.aspx" />
@@ -281,6 +282,13 @@
     </Compile>
     <Compile Include="Scenarios\ControlTree\Buttons_AutoId.aspx.designer.cs">
       <DependentUpon>Buttons_AutoId.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Scenarios\ModelBinding\EditForm.aspx.cs">
+      <DependentUpon>EditForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Scenarios\ModelBinding\EditForm.aspx.designer.cs">
+      <DependentUpon>EditForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Scenarios\ModelBinding\Simple.aspx.cs">
       <DependentUpon>Simple.aspx</DependentUpon>

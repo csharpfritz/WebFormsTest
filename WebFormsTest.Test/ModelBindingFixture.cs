@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -41,6 +43,25 @@ namespace Fritz.WebFormsTest.Test
                 Assert.True(CanLocateTableWithCellContents(outHTML, "myGrid", item.Name));
             }
 
+
+        }
+
+        [Fact]
+        public void SimpleUpdate()
+        {
+
+            // Arrange
+            var sut = WebApplicationProxy.GetPageByLocation<Web.Scenarios.ModelBinding.EditForm>("/Scenarios/ModelBinding/EditForm/1");
+            var postData = new NameValueCollection();
+            const string newName = "TestTwo";
+            postData.Add("myForm$name", newName);
+
+            // Act
+            sut.MockPostData(postData);
+            ((FormView)(sut.FindControl("myForm"))).FindControl("Save").FireEvent("Command");
+
+            // Assert
+            Assert.Equal(newName, Web.Scenarios.ModelBinding.EditForm.SampleItems.First(i => i.ID == 1).Name);
 
         }
 

@@ -33,7 +33,7 @@ namespace Fritz.WebFormsTest.Web.Scenarios.ModelBinding
         // The id parameter name should match the DataKeyNames value set on the control
         public void myForm_UpdateItem(int id)
         {
-            Simple.GridItem item = SampleItems.FirstOrDefault(i => i.ID == id);
+            GridItem item = SampleItems.FirstOrDefault(i => i.ID == id);
             if (item == null)
             {
                 // The item wasn't found
@@ -52,7 +52,7 @@ namespace Fritz.WebFormsTest.Web.Scenarios.ModelBinding
 
         public void myForm_InsertItem()
         {
-            var item = new Simple.GridItem();
+            var item = new GridItem();
             TryUpdateModel(item);
             if (ModelState.IsValid)
             {

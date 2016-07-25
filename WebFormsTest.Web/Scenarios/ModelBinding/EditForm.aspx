@@ -10,7 +10,7 @@
     <form id="form1" runat="server">
     <div>
 
-        <asp:FormView runat="server" ID="myForm" ItemType="Fritz.WebFormsTest.Web.Scenarios.ModelBinding.Simple+GridItem" 
+        <asp:FormView runat="server" ID="myForm" ItemType="Fritz.WebFormsTest.Web.Scenarios.ModelBinding.GridItem" 
             DataKeyNames="ID" DefaultMode="Edit"
             SelectMethod="myForm_GetItem" InsertMethod="myForm_InsertItem" UpdateMethod="myForm_UpdateItem">
             <HeaderTemplate>

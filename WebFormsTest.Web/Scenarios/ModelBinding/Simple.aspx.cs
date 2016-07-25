@@ -32,14 +32,14 @@ namespace Fritz.WebFormsTest.Web.Scenarios.ModelBinding
             return SampleItems;
         }
 
-        public class GridItem
-        {
-            public int ID { get; set; }
-
-            [Required, MinLength(3)]
-            public string Name { get; set; }
-        }
-
     }
+
+  public class GridItem
+  {
+    public int ID { get; set; }
+
+    [Required, MinLength(3)]
+    public string Name { get; set; }
+  }
 
 }

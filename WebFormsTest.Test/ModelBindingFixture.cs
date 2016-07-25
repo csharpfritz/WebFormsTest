@@ -51,13 +51,15 @@ namespace Fritz.WebFormsTest.Test
         {
 
             // Arrange
-            var sut = WebApplicationProxy.GetPageByLocation<Web.Scenarios.ModelBinding.EditForm>("/Scenarios/ModelBinding/EditForm/1");
+            var sut = WebApplicationProxy.GetPageByLocation<Web.Scenarios.ModelBinding.EditForm>(
+              "/Scenarios/ModelBinding/EditForm/1");
             var postData = new NameValueCollection();
             const string newName = "TestTwo";
             postData.Add("myForm$name", newName);
 
             // Act
             sut.MockPostData(postData);
+            sut.RunToEvent(WebFormEvent.PreRender);
             ((FormView)(sut.FindControl("myForm"))).FindControl("Save").FireEvent("Command");
 
             // Assert

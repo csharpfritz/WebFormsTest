@@ -12,6 +12,7 @@ using System.Web.Caching;
 using System.Web.Compilation;
 using System.Web.Configuration;
 using System.Web.Hosting;
+using System.Web.Services;
 using System.Web.SessionState;
 using System.Web.UI;
 
@@ -277,7 +278,6 @@ namespace Fritz.WebFormsTest
 
     public static T GetPageByType<T>() where T : Page
     {
-
       if (_Instance._SkipCrawl) throw new InvalidOperationException("Unable to fetch by type because the project has not been indexed");
 
       var locn = _Instance._LocationTypeMap[typeof(T)];
@@ -296,6 +296,25 @@ namespace Fritz.WebFormsTest
       return GetPageByLocation(locn);
 
     }
+	
+	/// <summary>
+	/// Allows for a HttpContext to be injected into a ASMX service when testing a service that is using a context, a session, and other web related properties
+	/// that one would expect to be present while under test.
+	/// </summary>
+	/// <typeparam name="TService">A service that is typeof WebService from Microsoft's System.Web.Services namespace.</typeparam>
+	/// <param name="service">The service to inject context into.</param>
+	/// <param name="contextModifier">An optional action to modify the context if need be such as adding a session for example.</param>
+	public static void InjectContextIntoWebService<TService>(TService service, Action<HttpContext> contextModifier = null) where TService : WebService
+	{
+		var privateFields = typeof(WebService).GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+		var privateMethods = typeof(WebService).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic);
+
+		var location = LocateSourceFolder(service.GetType());
+		var serviceName = service.ToString();
+
+		//SetContext
+		SubstituteDummyHttpContext($"/{serviceName}.asmx");
+	}
 
     /// <summary>
     /// This is the application object created typically by the "global.asax.cs" class

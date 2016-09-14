@@ -306,14 +306,23 @@ namespace Fritz.WebFormsTest
 	/// <param name="contextModifier">An optional action to modify the context if need be such as adding a session for example.</param>
 	public static void InjectContextIntoWebService<TService>(TService service, Action<HttpContext> contextModifier = null) where TService : WebService
 	{
-		var privateFields = typeof(WebService).GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
-		var privateMethods = typeof(WebService).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic);
+		var root = WebRootFolder.Split('\\');
+		var fullPath = $"/{service.GetType().FullName}".Replace(".", "/").Split('/');
 
-		var location = LocateSourceFolder(service.GetType());
-		var serviceName = service.ToString();
+		// Attempting to compute the relative path of the service that we want to inject the context into.
+		// This probably does not matter as much compared to aspx pages since we don't have to do any compiling at runtime
+		// but am making an effort to be consistent.
+		var relativeFilePath = string.Join("/", fullPath.Except(root)) + ".asmx";
+		
+		// Construct our dummy http context.
+		SubstituteDummyHttpContext(relativeFilePath);
 
-		//SetContext
-		SubstituteDummyHttpContext($"/{serviceName}.asmx");
+		// Invoke our context modifier if the action was given to us.
+		contextModifier?.Invoke(HttpContext.Current);
+
+		// Finally, get the non-public SetContext method definition from the web service type so that we can invoke it on our service.
+		var setContextMethod = typeof(WebService).GetMethod("SetContext", BindingFlags.Instance | BindingFlags.NonPublic);
+		setContextMethod.Invoke(service, new object[] {HttpContext.Current});
 	}
 
     /// <summary>

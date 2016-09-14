@@ -91,6 +91,7 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebApplicationProxyException.cs" />
     <Compile Include="WebApplicationProxyOptions.cs" />
     <Compile Include="WebFormEvent.cs" />
   </ItemGroup>

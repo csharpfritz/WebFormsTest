@@ -467,35 +467,36 @@ namespace Fritz.WebFormsTest
       return webFolder;
     }
 
-
     private static void TriggerApplicationStart(HttpApplication app)
     {
 
       var mi = app.GetType().GetMethod("Application_Start", BindingFlags.Instance | BindingFlags.NonPublic);
       mi.Invoke(app, new object[] { app, EventArgs.Empty });
-
     }
 
     private static void CreateHttpApplication()
     {
+		// Create the Global / HttpApplication object
+		Type appType = GetHttpApplicationType();
+		try
+		{
+			Application = Activator.CreateInstance(appType) as HttpApplication;
+		}
+		catch (Exception ex)
+		{
+			throw new WebApplicationProxyException("Failed to set Application property on WebApplicationProxy; could not create instance from your application that is implementing the HttpApplication type. Please check the class in your appliction that is implementing the HttpApplication type; the default constructor is throwing an exception.", ex);
+		}
 
-      // Create the Global / HttpApplication object
-      Type appType = GetHttpApplicationType();
-      WebApplicationProxy.Application = Activator.CreateInstance(appType) as HttpApplication;
+		// Create the HttpApplicationState
+		Type asType = typeof(HttpApplicationState);
+		var appState = asType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { }, null)
+							 .Invoke(new object[] { }) as HttpApplicationState;
 
-      // Create the HttpApplicationState
-      Type asType = typeof(HttpApplicationState);
-      var appState = asType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { }, null)
-        .Invoke(new object[] { }) as HttpApplicationState;
+		// Inject the application state
+		var theField = typeof(HttpApplication).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
+		theField.SetValue(Application, appState);
 
-      // Inject the application state
-      var theField = typeof(HttpApplication).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
-      theField.SetValue(WebApplicationProxy.Application, appState);
-
-      TriggerApplicationStart(WebApplicationProxy.Application);
-
-
-
+		TriggerApplicationStart(Application);
     }
 
     private static void ReadWebConfig()

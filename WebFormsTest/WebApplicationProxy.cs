@@ -470,7 +470,7 @@ namespace Fritz.WebFormsTest
 		var match = Regex.Match(debugHeaderValue, regexPattern);
 
 		if (!match.Success)
-			throw new WebApplicationProxyException($"Could not find pdb file from assembly in type: {sampleWebType.FullName}", null);
+			throw new Exception($"Could not find pdb file from assembly in type: {sampleWebType.FullName}");
 
 		var pdbFilePath = match.Groups["pdbFile"].Value;
 		var pdbFile = new FileInfo(pdbFilePath);

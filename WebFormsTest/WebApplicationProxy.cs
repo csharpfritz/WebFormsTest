@@ -62,25 +62,21 @@ namespace Fritz.WebFormsTest
     /// <param name="options">Options to configure the proxy</param>
     public static void Create(Type sampleWebType, WebApplicationProxyOptions options = null)
     {
+        DirectoryInfo webFolder;
 
-      DirectoryInfo webFolder;
-
-      if (options != null && options.WebFolder != null)
-      {
-        webFolder = new DirectoryInfo(options.WebFolder);
-      }
-      else {
-
-        webFolder = LocateSourceFolder(sampleWebType);
+        if (options != null && options.WebFolder != null)
+        {
+            webFolder = new DirectoryInfo(options.WebFolder);
+        }
+        else
+        {
+            webFolder = LocateSourceFolder(sampleWebType);
+        }
 
         Create(webFolder.FullName, options?.SkipCrawl ?? true, options?.SkipPrecompile ?? true);
-
-      }
-
     }
-
-    [Obsolete("Use the autolocate-enabled signature")]
-    public static void Create(string rootFolder, bool skipCrawl = true, bool skipPrecompile = true)
+        
+    private static void Create(string rootFolder, bool skipCrawl = true, bool skipPrecompile = true)
     {
       _Instance = new WebApplicationProxy(rootFolder, skipCrawl, skipPrecompile);
 

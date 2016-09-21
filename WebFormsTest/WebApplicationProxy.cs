@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Compilation;
@@ -446,39 +445,22 @@ namespace Fritz.WebFormsTest
 
     private static DirectoryInfo LocateSourceFolder(Type sampleWebType)
     {
-		DirectoryInfo webFolder;
-		var parms = new ReaderParameters { ReadSymbols = true };
-		var assemblyDef = AssemblyDefinition.ReadAssembly(new Uri(sampleWebType.Assembly.CodeBase).LocalPath);
+      DirectoryInfo webFolder;
+      var parms = new ReaderParameters { ReadSymbols = true };
+      var assemblyDef = AssemblyDefinition.ReadAssembly(new Uri(sampleWebType.Assembly.CodeBase).LocalPath);
 
-		byte[] debugHeader;
-		var img = assemblyDef.MainModule.GetDebugHeader(out debugHeader);
-		
-		// Skipping the first n number of bytes from the debugHeader could lead to unexpected results.
-		// It seems that all we are really interested in is finding the pdb file in the header, a regex will work 
-		// great for this.
-		var debugHeaderValue = Encoding.ASCII.GetString(debugHeader);
+      byte[] debugHeader;
+      var img = assemblyDef.MainModule.GetDebugHeader(out debugHeader);
+      var pdbFilename = Encoding.ASCII.GetString(debugHeader.Skip(24).Take(debugHeader.Length - 25).ToArray());
+      var pdbFile = new FileInfo(pdbFilename);
+      webFolder = pdbFile.Directory;
 
-		// The regex pattern to pull pdb file
-		// Look for either a file stored at any Windows letter path or unc windows path followed by n words and ending with '.pdb'.
-		var regexPattern = "(?<pdbFile>([a-zA-Z]:\\\\|\\\\\\\\)[\\w\\\\]*.pdb)";
+      while ((webFolder.GetFiles("*.csproj").Length == 0 && webFolder.GetFiles("*.vbproj").Length == 0))
+      {
+        webFolder = webFolder.Parent;
+      }
 
-		// See if pattern matches
-		var match = Regex.Match(debugHeaderValue, regexPattern);
-
-		if (!match.Success)
-			throw new Exception($"Could not find pdb file from assembly in type: {sampleWebType.FullName}");
-
-		var pdbFilePath = match.Groups["pdbFile"].Value;
-		var pdbFile = new FileInfo(pdbFilePath);
-		
-		webFolder = pdbFile.Directory;
-
-		while ((webFolder.GetFiles("*.csproj").Length == 0 && webFolder.GetFiles("*.vbproj").Length == 0))
-		{
-		webFolder = webFolder.Parent;
-		}
-
-		return webFolder;
+      return webFolder;
     }
 
     private static void TriggerApplicationStart(HttpApplication app)

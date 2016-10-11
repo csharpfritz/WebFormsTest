@@ -12,6 +12,7 @@ using System.Web;
 using System.Web.Hosting;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Fritz.WebFormsTest.Web.Scenarios.WebServices;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -46,6 +47,34 @@ namespace Fritz.WebFormsTest.Test
 
       t = WebApplicationProxy.GetPageByLocation("/Default.aspx");
 
+    }
+
+    [Fact]
+	public void CheckContextIsInjectedIntoWebService()
+	{
+	    var service = new TestWebService();
+
+		WebApplicationProxy.InjectContextIntoWebService(service);
+
+		Assert.Equal(HttpContext.Current, service.Context);
+	}
+
+    [Fact]
+    public void CheckSessionExistsOnInjectedContextWithSessionOnWebService()
+    {
+        var service = new TestWebService();
+
+        var session = WebApplicationProxy.GetNewSession(new Dictionary<string, object>
+        {
+            ["TestCode"] = "123"
+        });
+
+        WebApplicationProxy.InjectContextIntoWebService(service, context =>
+        {
+            context.AddSession(session);
+        });
+
+        Assert.Equal("123", service.Session["TestCode"]);
     }
 
     [Fact]

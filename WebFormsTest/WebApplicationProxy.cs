@@ -464,7 +464,7 @@ namespace Fritz.WebFormsTest
 
 		// The regex pattern to pull pdb file
 		// Look for either a file stored at any Windows letter path or unc windows path followed by n words and ending with '.pdb'.
-		var regexPattern = "(?<pdbFile>([a-zA-Z]:\\\\|\\\\\\\\)[\\w\\\\]*.pdb)";
+		var regexPattern = "(?<pdbFile>([a-zA-Z]:\\\\|\\\\\\\\)[\\w._\\\\0-9-\\s]*.pdb)";
 
 		// See if pattern matches
 		var match = Regex.Match(debugHeaderValue, regexPattern);

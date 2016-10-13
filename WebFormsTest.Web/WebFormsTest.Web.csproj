@@ -311,6 +311,9 @@
     <Compile Include="Scenarios\WebConfig\AppSettings.aspx.designer.cs">
       <DependentUpon>AppSettings.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Scenarios\WebServices\TestWebService.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

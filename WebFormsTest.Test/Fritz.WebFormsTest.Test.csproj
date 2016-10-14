@@ -114,6 +114,7 @@
     <Compile Include="SetPageStateFixture.cs" />
     <Compile Include="WebApplicationProxyFixture.cs" />
     <Compile Include="WebConfigFixture.cs" />
+    <Compile Include="WebServiceFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

@@ -50,34 +50,6 @@ namespace Fritz.WebFormsTest.Test
     }
 
     [Fact]
-	public void CheckContextIsInjectedIntoWebService()
-	{
-	    var service = new TestWebService();
-
-		WebApplicationProxy.InjectContextIntoWebService(service);
-
-		Assert.Equal(HttpContext.Current, service.Context);
-	}
-
-    [Fact]
-    public void CheckSessionExistsOnInjectedContextWithSessionOnWebService()
-    {
-        var service = new TestWebService();
-
-        var session = WebApplicationProxy.GetNewSession(new Dictionary<string, object>
-        {
-            ["TestCode"] = "123"
-        });
-
-        WebApplicationProxy.InjectContextIntoWebService(service, context =>
-        {
-            context.AddSession(session);
-        });
-
-        Assert.Equal("123", service.Session["TestCode"]);
-    }
-
-    [Fact]
     public void BeginProcessing()
     {
 

@@ -63,20 +63,20 @@ namespace Fritz.WebFormsTest
     /// <param name="options">Options to configure the proxy</param>
     public static void Create(Type sampleWebType, WebApplicationProxyOptions options = null)
     {
-        DirectoryInfo webFolder;
+      DirectoryInfo webFolder;
 
-        if (options != null && options.WebFolder != null)
-        {
-            webFolder = new DirectoryInfo(options.WebFolder);
-        }
-        else
-        {
-            webFolder = LocateSourceFolder(sampleWebType);
-        }
+      if (options != null && options.WebFolder != null)
+      {
+        webFolder = new DirectoryInfo(options.WebFolder);
+      }
+      else
+      {
+        webFolder = LocateSourceFolder(sampleWebType);
+      }
 
-        Create(webFolder.FullName, options?.SkipCrawl ?? true, options?.SkipPrecompile ?? true);
+      Create(webFolder.FullName, options?.SkipCrawl ?? true, options?.SkipPrecompile ?? true);
     }
-        
+
     private static void Create(string rootFolder, bool skipCrawl = true, bool skipPrecompile = true)
     {
       _Instance = new WebApplicationProxy(rootFolder, skipCrawl, skipPrecompile);
@@ -173,7 +173,7 @@ namespace Fritz.WebFormsTest
     /// <summary>
     /// Check if the Proxy is running
     /// </summary>
-    public static bool IsInitialized {  get { return _Instance != null ? _Instance.Initialized : false; } }
+    public static bool IsInitialized { get { return _Instance != null ? _Instance.Initialized : false; } }
 
     /// <summary>
     /// Add some needed configuration to the HttpRuntime so that it thinks we are running in a Web Service
@@ -292,34 +292,45 @@ namespace Fritz.WebFormsTest
       return GetPageByLocation(locn);
 
     }
-	
-	/// <summary>
-	/// Allows for a HttpContext to be injected into a ASMX service when testing a service that is using a context, a session, and other web related properties
-	/// that one would expect to be present while under test.
-	/// </summary>
-	/// <typeparam name="TService">A service that is typeof WebService from Microsoft's System.Web.Services namespace.</typeparam>
-	/// <param name="service">The service to inject context into.</param>
-	/// <param name="contextModifier">An optional action to modify the context if need be such as adding a session for example.</param>
-	public static void InjectContextIntoWebService<TService>(TService service, Action<HttpContext> contextModifier = null) where TService : WebService
-	{
-		var root = WebRootFolder.Split('\\');
-		var fullPath = $"/{service.GetType().FullName}".Replace(".", "/").Split('/');
 
-		// Attempting to compute the relative path of the service that we want to inject the context into.
-		// This probably does not matter as much compared to aspx pages since we don't have to do any compiling at runtime
-		// but am making an effort to be consistent.
-		var relativeFilePath = string.Join("/", fullPath.Except(root)) + ".asmx";
-		
-		// Construct our dummy http context.
-		SubstituteDummyHttpContext(relativeFilePath);
+    public static T GetService<T>(Action<HttpContext> contextModifier = null, params object[] serviceConstructorArgs ) where T : WebService
+    {
 
-		// Invoke our context modifier if the action was given to us.
-		contextModifier?.Invoke(HttpContext.Current);
+      var svc = Activator.CreateInstance(typeof(T), serviceConstructorArgs) as T;
+      InjectContextIntoWebService(svc, contextModifier);
 
-		// Finally, get the non-public SetContext method definition from the web service type so that we can invoke it on our service.
-		var setContextMethod = typeof(WebService).GetMethod("SetContext", BindingFlags.Instance | BindingFlags.NonPublic);
-		setContextMethod.Invoke(service, new object[] {HttpContext.Current});
-	}
+      return svc;
+
+    }
+
+
+    /// <summary>
+    /// Allows for a HttpContext to be injected into a ASMX service when testing a service that is using a context, a session, and other web related properties
+    /// that one would expect to be present while under test.
+    /// </summary>
+    /// <typeparam name="TService">A service that is typeof WebService from Microsoft's System.Web.Services namespace.</typeparam>
+    /// <param name="service">The service to inject context into.</param>
+    /// <param name="contextModifier">An optional action to modify the context if need be such as adding a session for example.</param>
+    private static void InjectContextIntoWebService<TService>(TService service, Action<HttpContext> contextModifier = null) where TService : WebService
+    {
+      var root = WebRootFolder.Split('\\');
+      var fullPath = $"/{service.GetType().FullName}".Replace(".", "/").Split('/');
+
+      // Attempting to compute the relative path of the service that we want to inject the context into.
+      // This probably does not matter as much compared to aspx pages since we don't have to do any compiling at runtime
+      // but am making an effort to be consistent.
+      var relativeFilePath = string.Join("/", fullPath.Except(root)) + ".asmx";
+
+      // Construct our dummy http context.
+      SubstituteDummyHttpContext(relativeFilePath);
+
+      // Invoke our context modifier if the action was given to us.
+      contextModifier?.Invoke(HttpContext.Current);
+
+      // Finally, get the non-public SetContext method definition from the web service type so that we can invoke it on our service.
+      var setContextMethod = typeof(WebService).GetMethod("SetContext", BindingFlags.Instance | BindingFlags.NonPublic);
+      setContextMethod.Invoke(service, new object[] { HttpContext.Current });
+    }
 
     /// <summary>
     /// This is the application object created typically by the "global.asax.cs" class
@@ -390,9 +401,11 @@ namespace Fritz.WebFormsTest
       if (isDisposing) GC.SuppressFinalize(this);
 
       // Clean up the target folder
-      try {
+      try
+      {
         // Directory.Delete(WebApplicationRootFolder, true);
-      } catch (DirectoryNotFoundException)
+      }
+      catch (DirectoryNotFoundException)
       {
         // Its ok...  its already gone!
       }
@@ -500,34 +513,34 @@ namespace Fritz.WebFormsTest
 
     private static void CreateHttpApplication()
     {
-		// Create the Global / HttpApplication object
-		Type appType = GetHttpApplicationType();
-		try
-		{
-			Application = Activator.CreateInstance(appType) as HttpApplication;
-		}
-		catch (Exception ex)
-		{
-			throw new WebApplicationProxyException("Failed to set Application property on WebApplicationProxy; could not create instance from your application that is implementing the HttpApplication type. Please check the class in your appliction that is implementing the HttpApplication type; the default constructor is throwing an exception.", ex);
-		}
+      // Create the Global / HttpApplication object
+      Type appType = GetHttpApplicationType();
+      try
+      {
+        Application = Activator.CreateInstance(appType) as HttpApplication;
+      }
+      catch (Exception ex)
+      {
+        throw new WebApplicationProxyException("Failed to set Application property on WebApplicationProxy; could not create instance from your application that is implementing the HttpApplication type. Please check the class in your appliction that is implementing the HttpApplication type; the default constructor is throwing an exception.", ex);
+      }
 
-		// Create the HttpApplicationState
-		Type asType = typeof(HttpApplicationState);
-		var appState = asType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { }, null)
-							 .Invoke(new object[] { }) as HttpApplicationState;
+      // Create the HttpApplicationState
+      Type asType = typeof(HttpApplicationState);
+      var appState = asType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { }, null)
+                 .Invoke(new object[] { }) as HttpApplicationState;
 
-		// Inject the application state
-		var theField = typeof(HttpApplication).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
-		theField.SetValue(Application, appState);
+      // Inject the application state
+      var theField = typeof(HttpApplication).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
+      theField.SetValue(Application, appState);
 
-		TriggerApplicationStart(Application);
+      TriggerApplicationStart(Application);
     }
 
     private static void ReadWebConfig()
     {
 
       AppDomain.CurrentDomain.SetData("APP_CONFIG_FILE", Path.Combine(WebRootFolder, "web.config"));
-//      WebConfigurationManager.OpenWebConfiguration(Path.Combine(WebRootFolder, "web.con‌​fig"));
+      //      WebConfigurationManager.OpenWebConfiguration(Path.Combine(WebRootFolder, "web.con‌​fig"));
 
     }
 

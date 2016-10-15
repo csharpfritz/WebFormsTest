@@ -230,6 +230,8 @@ namespace Fritz.WebFormsTest
 
       if (_Instance == null || !_Instance.Initialized) throw new InvalidOperationException("The WebApplicationProxy has not been created and initialized properly");
 
+      location = HandleFriendlyUrls(location);
+
       var returnType = _Instance._compiler.GetCompiledType(location);
       SubstituteDummyHttpContext(location);
 
@@ -559,6 +561,38 @@ namespace Fritz.WebFormsTest
 
       AppDomain.CurrentDomain.SetData("APP_CONFIG_FILE", Path.Combine(WebRootFolder, "web.config"));
       //      WebConfigurationManager.OpenWebConfiguration(Path.Combine(WebRootFolder, "web.con‌​fig"));
+
+    }
+
+    private static string HandleFriendlyUrls(string location)
+    {
+
+      var legitExtensions = new[] { ".aspx", ".master", ".ascx", ".ashx", ".asmx" };
+
+      // Return immediately if this already has an ASPX in it
+      if (legitExtensions.Any(e => location.ToLowerInvariant().Contains(e)) )
+        return location;
+
+      var folders = location.Split('/');
+      var currentLocation = "";
+      var mpProvider = new TestConfigMapPath();
+      foreach (var folder in folders)
+      {
+
+        if (string.IsNullOrEmpty(folder)) continue;
+
+        currentLocation += "/" + folder;
+        var absoluteLocation = mpProvider.MapPath("", currentLocation);
+        if (Directory.Exists(absoluteLocation)) continue;
+        if (File.Exists(absoluteLocation + ".aspx")) {
+          break;
+        }
+
+        throw new FileNotFoundException("Unable to locate the file requested", location);
+
+      }
+
+      return currentLocation + ".aspx";
 
     }
 

@@ -50,34 +50,6 @@ namespace Fritz.WebFormsTest.Test
     }
 
     [Fact]
-	public void CheckContextIsInjectedIntoWebService()
-	{
-	    var service = new TestWebService();
-
-		WebApplicationProxy.InjectContextIntoWebService(service);
-
-		Assert.Equal(HttpContext.Current, service.Context);
-	}
-
-    [Fact]
-    public void CheckSessionExistsOnInjectedContextWithSessionOnWebService()
-    {
-        var service = new TestWebService();
-
-        var session = WebApplicationProxy.GetNewSession(new Dictionary<string, object>
-        {
-            ["TestCode"] = "123"
-        });
-
-        WebApplicationProxy.InjectContextIntoWebService(service, context =>
-        {
-            context.AddSession(session);
-        });
-
-        Assert.Equal("123", service.Session["TestCode"]);
-    }
-
-    [Fact]
     public void BeginProcessing()
     {
 
@@ -206,6 +178,28 @@ namespace Fritz.WebFormsTest.Test
     {
 
       Assert.NotNull(HostingEnvironment.VirtualPathProvider);
+
+    }
+
+    [Fact]
+    public void FriendlyUrlIsHandled()
+    {
+
+      // Arrange
+      var expectedType = typeof(WebFormsTest.Web.Scenarios.Postback.Textbox_StaticId);
+
+      // Act
+
+      // Get the default page
+      var locatedType = WebApplicationProxy.GetPageByLocation("/Scenarios/Postback/Textbox_StaticId").GetType();
+      _testHelper.WriteLine("Type returned: " + locatedType.BaseType.FullName);
+
+      // NOTE: This needs to look at the BaseType of the type returned from the GetPageByLocation
+      // because this is the JIT'd page which is merged with the ASPX and inherits from the type
+      // defined in the code-behind
+
+      // Assert
+      Assert.Equal(expectedType.FullName, locatedType.BaseType.FullName);
 
     }
 

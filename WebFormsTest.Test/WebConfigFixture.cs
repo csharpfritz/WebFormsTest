@@ -25,7 +25,7 @@ namespace Fritz.WebFormsTest.Test
 
     public ITestOutputHelper Output { get; }
 
-    //[Fact]
+    [Fact(Skip ="Config inspection is unreliable in integration tests")]
     public void CanFetchAppSettings()
     {
 
@@ -43,7 +43,7 @@ namespace Fritz.WebFormsTest.Test
 
     }
 
-    //[Fact]
+    [Fact(Skip = "Config inspection is unreliable in integration tests")]
     public void CanFetchConnectionStrings()
     {
 

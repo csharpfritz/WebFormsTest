@@ -12,6 +12,7 @@ using System.Web;
 using System.Web.Hosting;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Fritz.WebFormsTest.Web.Scenarios.WebServices;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -177,6 +178,28 @@ namespace Fritz.WebFormsTest.Test
     {
 
       Assert.NotNull(HostingEnvironment.VirtualPathProvider);
+
+    }
+
+    [Fact]
+    public void FriendlyUrlIsHandled()
+    {
+
+      // Arrange
+      var expectedType = typeof(WebFormsTest.Web.Scenarios.Postback.Textbox_StaticId);
+
+      // Act
+
+      // Get the default page
+      var locatedType = WebApplicationProxy.GetPageByLocation("/Scenarios/Postback/Textbox_StaticId").GetType();
+      _testHelper.WriteLine("Type returned: " + locatedType.BaseType.FullName);
+
+      // NOTE: This needs to look at the BaseType of the type returned from the GetPageByLocation
+      // because this is the JIT'd page which is merged with the ASPX and inherits from the type
+      // defined in the code-behind
+
+      // Assert
+      Assert.Equal(expectedType.FullName, locatedType.BaseType.FullName);
 
     }
 

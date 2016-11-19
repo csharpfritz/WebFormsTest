@@ -15,7 +15,7 @@ namespace Fritz.WebFormsTest.Internal
 
   public class TestHttpSessionStateContainer : IHttpSessionState
   {
-    private bool _Abandon = false;
+
     private readonly Dictionary<string, object> _Items = new Dictionary<string, object>();
 
     public TestHttpSessionStateContainer(string sessionId)
@@ -170,7 +170,7 @@ namespace Fritz.WebFormsTest.Internal
 
     public void Abandon()
     {
-      _Abandon = true;
+      // do nothing
     }
 
     public void Add(string name, object value)

@@ -5,9 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 using Xunit;
 using Xunit.Abstractions;
+using Fritz.WebFormsTest.Web.Scenarios.ModelBinding;
 
 namespace Fritz.WebFormsTest.Test
 {
@@ -27,10 +29,10 @@ namespace Fritz.WebFormsTest.Test
         {
 
             // Arrange
-            var expectedItems = WebFormsTest.Web.Scenarios.ModelBinding.Simple.SampleItems;
+            var expectedItems = Simple.SampleItems;
 
             // Act
-            var sut = WebApplicationProxy.GetPageByLocation<Web.Scenarios.ModelBinding.Simple>("/Scenarios/ModelBinding/Simple.aspx");
+            var sut = WebApplicationProxy.GetPageByLocation<Simple>("/Scenarios/ModelBinding/Simple.aspx");
             sut.RunToEvent(WebFormEvent.PreRender);        // Need to execute all events
             var outHTML = sut.RenderHtml();
 
@@ -51,19 +53,24 @@ namespace Fritz.WebFormsTest.Test
         {
 
             // Arrange
-            var sut = WebApplicationProxy.GetPageByLocation<Web.Scenarios.ModelBinding.EditForm>(
+            var sut = WebApplicationProxy.GetPageByLocation<EditForm>(
               "/Scenarios/ModelBinding/EditForm/1");
             var postData = new NameValueCollection();
             const string newName = "TestTwo";
             postData.Add("myForm$name", newName);
 
             // Act
-            sut.MockPostData(postData);
+            //sut.MockPostData(postData);
             sut.RunToEvent(WebFormEvent.PreRender);
-            ((FormView)(sut.FindControl("myForm"))).FindControl("Save").FireEvent("Command");
+            //((FormView)(sut.FindControl("myForm"))).FindControl("Save").FireEvent("Command");
+            //sut.FindControl<Button>("myForm","Save").FireEvent("Command");
+
+            var form = sut.FindControl("myForm");
+            var saveButton = form.FindControl("Save");
+            saveButton.FireEvent("Command");
 
             // Assert
-            Assert.Equal(newName, Web.Scenarios.ModelBinding.EditForm.SampleItems.First(i => i.ID == 1).Name);
+            Assert.Equal(newName, EditForm.SampleItems.First(i => i.ID == 1).Name);
 
         }
 

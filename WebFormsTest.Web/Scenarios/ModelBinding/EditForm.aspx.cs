@@ -23,6 +23,9 @@ namespace Fritz.WebFormsTest.Web.Scenarios.ModelBinding
 
         }
 
+        public FormView TheForm {  get { return myForm; } }
+        
+
         // The id parameter should match the DataKeyNames value set on the control
         // or be decorated with a value provider attribute, e.g. [QueryString]int id
         public GridItem myForm_GetItem([FriendlyUrlSegments(0)]int? id)

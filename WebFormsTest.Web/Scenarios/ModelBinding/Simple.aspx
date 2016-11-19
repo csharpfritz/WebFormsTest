@@ -11,7 +11,7 @@
     <form id="form1" runat="server">
     <div>
     
-        <asp:GridView runat="server" id="myGrid" SelectMethod="Get">
+        <asp:GridView runat="server" id="myGrid" SelectMethod="Get" ItemType="Fritz.WebFormsTest.Web.Scenarios.ModelBinding.GridItem">
         </asp:GridView>
 
     </div>

@@ -544,6 +544,8 @@ namespace Fritz.WebFormsTest
         throw new WebApplicationProxyException("Failed to set Application property on WebApplicationProxy; could not create instance from your application that is implementing the HttpApplication type. Please check the class in your appliction that is implementing the HttpApplication type; the default constructor is throwing an exception.", ex);
       }
 
+      BuildManagerWrapper.AddReferencedAssembly(appType.Assembly);
+
       // Create the HttpApplicationState
       Type asType = typeof(HttpApplicationState);
       var appState = asType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { }, null)

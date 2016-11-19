@@ -74,7 +74,6 @@
     <Compile Include="HttpContextExtensions.cs" />
     <Compile Include="Internal\BrowserCapsExtensions.cs" />
     <Compile Include="Internal\BuildManagerWrapper.cs" />
-    <Compile Include="Internal\ControlExtensions.cs" />
     <Compile Include="Internal\HostingEnvironmentWrapper.cs" />
     <Compile Include="Internal\HttpRequestExtensions.cs" />
     <Compile Include="Internal\InternalPageExtensions.cs" />

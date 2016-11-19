@@ -17,7 +17,7 @@ namespace Fritz.WebFormsTest.Internal
     {
       get
       {
-        var p =_Type.GetProperty("TheBuildManager", BindingFlags.Static | BindingFlags.NonPublic);
+        var p = _Type.GetProperty("TheBuildManager", BindingFlags.Static | BindingFlags.NonPublic);
         return p.GetValue(null, null) as BuildManager;
       }
     }
@@ -58,7 +58,20 @@ namespace Fritz.WebFormsTest.Internal
       var initMethod = _Type.GetMethod("RegularAppRuntimeModeInitialize", BindingFlags.Instance | BindingFlags.NonPublic);
       initMethod.Invoke(TheBuildManager, null);
 
+      var initializedField = _Type.GetField("_theBuildManagerInitialized", BindingFlags.Static | BindingFlags.NonPublic);
+      initializedField.SetValue(null, true);
+
     }
+
+    public static void AddReferencedAssembly(Assembly a) {
+
+
+      var assemblyList = _Type.GetField("_topLevelReferencedAssemblies", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(TheBuildManager) as List<Assembly>;
+
+      assemblyList.Add(a);
+
+    }
+
 
   }
 

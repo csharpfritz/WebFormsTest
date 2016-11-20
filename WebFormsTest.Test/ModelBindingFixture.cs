@@ -66,8 +66,8 @@ namespace Fritz.WebFormsTest.Test
 
 
       // Assert
-      _testHelper.WriteLine(results);
-
+      //_testHelper.WriteLine(sut.Request.GetRouteData());
+      
 
     }
 
@@ -83,15 +83,19 @@ namespace Fritz.WebFormsTest.Test
       const string newName = "TestTwo";
       postData.Add("myForm$name", newName);
 
+
+      // NOTE: Need to set the PostData but load values into the ModelState dictionary at Page.ModelState
+      //
+
       // Act
-      //sut.MockPostData(postData);
+      sut.MockPostData(postData);
       sut.RunToEvent(WebFormEvent.PreRender);
       //((FormView)(sut.FindControl("myForm"))).FindControl("Save").FireEvent("Command");
       //sut.FindControl<Button>("myForm","Save").FireEvent("Command");
 
       var form = sut.FindControl("myForm");
       var saveButton = form.FindControlHierarchical<Button>("Save");
-      saveButton.FireEvent("Command");
+      saveButton.FireEvent("Command", new CommandEventArgs("Update",""));
 
       // Assert
       Assert.Equal(newName, EditForm.SampleItems.First(i => i.ID == 1).Name);

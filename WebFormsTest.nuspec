@@ -19,6 +19,9 @@
 		<tags>asp.net test unittest</tags>
     <dependencies>
       <dependency id="Mono.Cecil" version="[0.9.6.1,1.0)"/>
+      <dependency id="Microsoft.AspNet.FriendlyUrls" version="1.0.2" />
+      <dependency id="Microsoft.AspNet.FriendlyUrls.Core" version="1.0.2" />
+      <dependency id="Microsoft.Web.Infrastructure" version="1.0.0.0" />
     </dependencies>
 	</metadata>
 	<files>

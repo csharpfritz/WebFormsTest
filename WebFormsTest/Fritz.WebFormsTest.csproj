@@ -44,6 +44,14 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.AspNet.FriendlyUrls, Version=1.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.FriendlyUrls.Core.1.0.2\lib\net40\Microsoft.AspNet.FriendlyUrls.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <HintPath>..\packages\Mono.Cecil.0.9.6.1\lib\net40\Mono.Cecil.dll</HintPath>
       <Private>True</Private>
@@ -74,6 +82,7 @@
     <Compile Include="HttpContextExtensions.cs" />
     <Compile Include="Internal\BrowserCapsExtensions.cs" />
     <Compile Include="Internal\BuildManagerWrapper.cs" />
+    <Compile Include="Internal\FriendlyUrlsHandler.cs" />
     <Compile Include="Internal\HostingEnvironmentWrapper.cs" />
     <Compile Include="Internal\HttpRequestExtensions.cs" />
     <Compile Include="Internal\InternalPageExtensions.cs" />

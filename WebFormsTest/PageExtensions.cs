@@ -72,6 +72,13 @@ namespace Fritz.WebFormsTest
 
         }
 
+        public static Page AddToModelState(this Page myPage, string name, object value) {
+
+           var modelStateProp = myPage.GetType().GetProperty("ModelState");
+           ModelStateDictionary modelState = modelStateProp.Get
+
+        }
+
         public static void FireEvent(this Page myPage, WebFormEvent e)
         {
             myPage.FireEvent(e, EventArgs.Empty);

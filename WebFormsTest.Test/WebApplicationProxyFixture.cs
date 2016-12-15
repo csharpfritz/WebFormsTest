@@ -91,6 +91,19 @@ namespace Fritz.WebFormsTest.Test
     }
 
     [Fact]
+    public void MasterPageShouldHaveSameHttpContextAsPage()
+    {
+      HttpContext context = null;
+      WebApplicationProxy.GetPageByLocation<_Default>("/Default.aspx", ctx =>
+      {
+        // Grab the context from the modifier so that we can check it later after the GetPageByLocation for default is finished.
+        context = ctx;
+      });
+			
+      Assert.Equal(HttpContext.Current, context);
+    }
+
+    [Fact]
     public void HttpApplicationStateShouldNotBeNull()
     {
 

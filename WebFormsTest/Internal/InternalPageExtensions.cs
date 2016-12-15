@@ -61,7 +61,8 @@ namespace Fritz.WebFormsTest.Internal
 
       if (string.IsNullOrEmpty(myPage.MasterPageFile)) return;
 
-      var master = WebApplicationProxy.GetPageByLocation(myPage.MasterPageFile) as MasterPage;
+      // Prevent the master page from changing the HttpContext.
+      var master = WebApplicationProxy.GetPageByLocation(myPage.MasterPageFile, modifyExistingContext: false) as MasterPage;
       var masterField = typeof(Page).GetField("_master", BindingFlags.Instance | BindingFlags.NonPublic);
       masterField.SetValue(myPage, master);
 

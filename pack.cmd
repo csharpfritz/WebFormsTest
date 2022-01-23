@@ -11,7 +11,7 @@ md dist
 :: copy .\WebFormsTest\bin\%1\Fritz.WebFormsTest.dll .\.nuget\lib\net40
 
 :: Pack the nupkg
-.\packages\NuGet.CommandLine.3.3.0\tools\nuget pack WebFormsTest.nuspec -OutputDirectory dist
+.\packages\NuGet.CommandLine.6.0.0\tools\nuget pack WebFormsTest.nuspec -OutputDirectory dist
 
 goto :end
 

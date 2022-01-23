@@ -214,18 +214,23 @@ namespace Fritz.WebFormsTest
     /// Get a fully instantiated Page at the web location specified
     /// </summary>
     /// <param name="location">The web absolute folder location to retrive the Page from</param>
+    /// <param name="contextModifiers">Allows the testing method to change the context as is needed such as adding session state to it.</param>
+    /// <param name="modifyExistingContext">Indicates if the current HttpContext will get overwritten.</param>
     /// <returns>The Page object from the specified location</returns>
-    public static object GetPageByLocation(string location, Action<HttpContext> contextModifiers = null)
+    public static object GetPageByLocation(string location, Action<HttpContext> contextModifiers = null, bool modifyExistingContext = true)
     {
-      return GetPageByLocation(location, BrowserDefinitions.DEFAULT, contextModifiers);
+      return GetPageByLocation(location, BrowserDefinitions.DEFAULT, contextModifiers, modifyExistingContext);
     }
 
     /// <summary>
     /// Get a fully instantiated Page at the web location specified
     /// </summary>
     /// <param name="location">The web absolute folder location to retrive the Page from</param>
+    /// <param name="browserCaps"></param>
+    /// <param name="contextModifiers">Allows the testing method to change the context as is needed such as adding session state to it.</param>
+    /// <param name="modifyExistingContext">Indicates if the current HttpContext will get overwritten.</param>
     /// <returns>The Page object from the specified location</returns>
-    public static object GetPageByLocation(string location, HttpBrowserCapabilities browserCaps, Action<HttpContext> contextModifiers = null)
+    public static object GetPageByLocation(string location, HttpBrowserCapabilities browserCaps, Action<HttpContext> contextModifiers = null, bool modifyExistingContext = true)
     {
 
       if (_Instance == null || !_Instance.Initialized) throw new InvalidOperationException("The WebApplicationProxy has not been created and initialized properly");
@@ -233,19 +238,36 @@ namespace Fritz.WebFormsTest
       location = HandleFriendlyUrls(location);
 
       var returnType = _Instance._compiler.GetCompiledType(location);
-      SubstituteDummyHttpContext(location);
 
-      if (contextModifiers != null) contextModifiers(HttpContext.Current);
+      if (modifyExistingContext)
+      {
+        SubstituteDummyHttpContext(location);
+        contextModifiers?.Invoke(HttpContext.Current);
+      }
 
       dynamic outObj = Activator.CreateInstance(returnType);
 
       // Prepare the page for testing
       if (outObj is Page) ((Page)outObj).PrepareForTest();
 
-      CompleteHttpContext(HttpContext.Current);
+      if (modifyExistingContext)
+        CompleteHttpContext(HttpContext.Current);
 
       return outObj;
+    }
 
+    /// <summary>
+    /// Get a fully instantiated Page at the web location specified
+    /// </summary>
+    /// <typeparam name="T">The type of the Page to fetch</typeparam>
+    /// <param name="location">The web absolute folder location to retrive the Page from</param>
+    /// <param name="contextModifiers">Allows the testing method to change the context as is needed such as adding session state to it.</param>
+    /// <param name="modifyExistingContext">Indicates if the current HttpContext will get overwritten.</param>
+    /// <returns>A strongly-typed Page object from the specified location</returns>
+    public static T GetPageByLocation<T>(string location, Action<HttpContext> contextModifiers = null, bool modifyExistingContext = true) where T : Page
+    {
+
+      return GetPageByLocation(location, contextModifiers, modifyExistingContext) as T;
 
     }
 
@@ -254,24 +276,14 @@ namespace Fritz.WebFormsTest
     /// </summary>
     /// <typeparam name="T">The type of the Page to fetch</typeparam>
     /// <param name="location">The web absolute folder location to retrive the Page from</param>
+    /// <param name="browserCaps"></param>
+    /// <param name="contextModifiers">Allows the testing method to change the context as is needed such as adding session state to it.</param>
+    /// <param name="modifyExistingContext">Indicates if the current HttpContext will get overwritten.</param>
     /// <returns>A strongly-typed Page object from the specified location</returns>
-    public static T GetPageByLocation<T>(string location, Action<HttpContext> contextModifiers = null) where T : Page
+    public static T GetPageByLocation<T>(string location, HttpBrowserCapabilities browserCaps, Action<HttpContext> contextModifiers = null, bool modifyExistingContext = true) where T : Page
     {
 
-      return GetPageByLocation(location, contextModifiers) as T;
-
-    }
-
-    /// <summary>
-    /// Get a fully instantiated Page at the web location specified
-    /// </summary>
-    /// <typeparam name="T">The type of the Page to fetch</typeparam>
-    /// <param name="location">The web absolute folder location to retrive the Page from</param>
-    /// <returns>A strongly-typed Page object from the specified location</returns>
-    public static T GetPageByLocation<T>(string location, HttpBrowserCapabilities browserCaps, Action<HttpContext> contextModifiers = null) where T : Page
-    {
-
-      return GetPageByLocation(location, browserCaps, contextModifiers) as T;
+      return GetPageByLocation(location, browserCaps, contextModifiers, modifyExistingContext) as T;
 
     }
 
